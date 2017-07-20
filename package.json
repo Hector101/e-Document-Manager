@@ -1,0 +1,27 @@
+{
+  "name": "e-document-manager",
+  "version": "1.0.0",
+  "description": "A back-end project of a document management system",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hector101/e-Document-Manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hector101/e-Document-Manager/issues"
+  },
+  "homepage": "https://github.com/Hector101/e-Document-Manager#readme",
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.7.0",
+    "nodemon": "^1.11.0"
+  }
+}
