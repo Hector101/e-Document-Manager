@@ -1,15 +1,15 @@
+import documentsController from '../controllers/documents';
+import authorization from '../helpers/authorization';
 
 
 export default (router) => {
-  router.post('/documents');
+  router.post('/api/v1/documents', authorization.verifyUser, documentsController.create);
 
-  router.get('/documents', (req, res) => {
-    res.status(200).send('Welcome Documents');
-  });
-  router.get('/documents/:id');
-  router.get('/search/documents');
+  router.get('/api/v1/documents', authorization.verifyUser, authorization.verifySuperAndAdmin, documentsController.getAllDocument);
+  router.get('/api/v1/documents/:id', authorization.verifyUser, documentsController.getDocument);
+  router.get('/api/v1/search/documents', authorization.verifyUser, documentsController.searchDocument);
 
-  router.put('/documents/:id');
+  router.put('/api/v1/documents/:id', authorization.verifyUser, documentsController.updateDocument);
 
-  router.delete('/documents/:id');
+  router.delete('/api/v1/documents/:id', authorization.verifyUser, documentsController.deleteDocument);
 };

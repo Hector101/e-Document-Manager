@@ -3,9 +3,11 @@ engines:
     enabled: true
     channel: "eslint-3"
     config:
-      config: .eslintrc.js
+      config: .eslintrc
     checks:
       indent:
+        enabled: false
+      import/no-unresolved:
         enabled: false
   duplication:
     enabled: false

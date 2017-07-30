@@ -1,13 +1,13 @@
+import authorization from '../helpers/authorization';
+import roleController from '../controllers/roles';
 
 export default (router) => {
-  router.post('/roles');
+  router.post('/api/v1/roles', authorization.verifyUser, authorization.verifySuperAdmin, roleController.create);
 
-  router.get('/roles', (req, res) => {
-    res.status(200).send('Welcome Role');
-  });
-  router.get('/roles/:id');
+  router.get('/api/v1/roles', authorization.verifyUser, roleController.getRoles);
+  router.get('/api/v1/roles/:id', authorization.verifyUser, roleController.getRole);
 
-  router.put('/roles/:id');
+  router.put('/api/v1/roles/:id', authorization.verifyUser, authorization.verifySuperAdmin, roleController.updateRole);
 
-  router.delete('/roles/:id');
+  router.delete('/api/v1/roles/:id', authorization.verifyUser, authorization.verifySuperAdmin, roleController.deleteRole);
 };

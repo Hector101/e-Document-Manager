@@ -26,7 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        isAlphaNumeric: true
+        notEmpty: {
+          args: true,
+          message: 'username must be alpha-numeric'
+        }
       }
     },
     email: {
@@ -34,19 +37,27 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true
+        isEmail: {
+          args: true,
+          msg: 'email address entered not valid'
+        }
       }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isAlphanumeric: true
+        notEmpty: true,
+        min: 6
       }
+    },
+    blocked: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     roleId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       defaultValue: 3,
     }
   });
