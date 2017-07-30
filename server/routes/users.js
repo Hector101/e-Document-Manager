@@ -1,16 +1,22 @@
+import userController from '../controllers/users';
+import authorization from '../helpers/authorization';
 
-
+/**
+ * defines user related routes
+ * @param {Object} router - express app placeholder
+ * @return {void}
+ */
 export default (router) => {
-  router.post('/users/login');
+  router.post('/api/v1/users/login', userController.login);
+  router.post('/api/v1/users', userController.create);
+  router.post('/api/v1/users/role', authorization.verifyUser, userController.getUserRole);
 
-  router.get('/users', (req, res) => {
-    res.status(200).send('Welcome User');
-  });
-  router.get('/users/:id');
-  router.get('/users/:id/documents');
-  router.get('/search/users');
+  router.get('/api/v1/users', authorization.verifyUser, authorization.verifySuperAndAdmin, userController.getUsers);
+  router.get('/api/v1/users/:id', authorization.verifyUser, authorization.verifySuperAndAdmin, userController.getUser);
+  router.get('/api/v1/users/:id/documents', authorization.verifyUser, userController.getUserDocuments);
+  router.get('/api/v1/search/users', authorization.verifyUser, authorization.verifySuperAndAdmin, userController.searchUser);
 
-  router.put('/users/:id');
+  router.put('/api/v1/users/:id', authorization.verifyUser, userController.updateUser);
 
-  router.delete('/users/:id');
+  router.delete('/api/v1/users/:id', authorization.verifyUser, authorization.verifySuperAdmin, userController.deleteUser);
 };
