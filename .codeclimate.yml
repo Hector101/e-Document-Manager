@@ -1,7 +1,6 @@
 engines:
   eslint:
     enabled: true
-    channel: "eslint-3"
     config:
       config: .eslintrc
     checks:
@@ -10,12 +9,13 @@ engines:
       import/no-unresolved:
         enabled: false
   duplication:
-    enabled: false
+    enabled: true
     config:
       languages:
       - javascript
+        mass_threshold: 40
 ratings:
   paths:
   - "server/**/*.js"
 exclude_paths:
-  - "server/test/**/*"
+  - node_modules/**/*
