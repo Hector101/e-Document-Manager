@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        len: [10, 60]
       }
     },
     content: {
@@ -30,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'public',
+      validate: {
+        isIn: [['role', 'private', 'public']]
+      }
     }
   });
 

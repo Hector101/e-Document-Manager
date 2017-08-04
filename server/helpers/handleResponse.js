@@ -17,7 +17,7 @@ class HandleResponse {
     if (typeof message === 'string' && message) {
       return res.status(status).send({ message });
     }
-    return res.status(status).send({ message: err.message });
+    return res.status(status).send({ message: err.errors[0].message });
   }
 
   /**
@@ -30,6 +30,8 @@ class HandleResponse {
    */
   response(res, status, message) {
     if (typeof message === 'string' && message) {
+      return res.status(status).send({ message });
+    } else if (Array.isArray(message)) {
       return res.status(status).send({ message });
     }
     return res.status(status).send(message);

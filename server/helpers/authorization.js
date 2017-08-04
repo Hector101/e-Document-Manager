@@ -68,6 +68,23 @@ class Authorization {
   }
 
   /**
+   * collect user details
+   * @param {Object} requestBody - request body object
+   * @returns {Object} user details
+   * @memberof Authorization
+   */
+  documents(requestBody) {
+    return {
+      id: requestBody.id,
+      title: requestBody.title,
+      content: requestBody.content,
+      access: requestBody.access,
+      createdAt: requestBody.createdAt,
+      updatedAt: requestBody.updatedAt
+    };
+  }
+
+  /**
    * verify if user is authenticated
    * @param {Object} req - request object
    * @param {Object} res - response object

@@ -18,8 +18,8 @@ class RolesController {
     return models.Role.create({
       name: req.body.name
     })
-    .then(role => handleResponse.response(res, 200, { role }))
-    .catch(err => handleResponse.handleError(err, 403, res));
+    .then(role => handleResponse.response(res, 201, { role }))
+    .catch(err => handleResponse.handleError(err, 400, res, 'Role already exist'));
   }
 
   /**
@@ -46,11 +46,11 @@ class RolesController {
     return models.Role.findById(req.params.id)
     .then((role) => {
       if (!role) {
-        return handleResponse.response(res, 403, 'Role not found');
+        return handleResponse.response(res, 404, 'Role not found');
       }
       return handleResponse.response(res, 200, { role });
     })
-    .catch(err => handleResponse.handleError(err, 403, res));
+    .catch(err => handleResponse.handleError(err, 400, res, 'Invalid role id provided'));
   }
 
   /**
@@ -66,12 +66,12 @@ class RolesController {
     }
     return models.Role.findById(req.params.id)
       .then((roles) => {
-        if (!roles) return handleResponse.response(res, 200, 'Role not found');
-        return roles.update({ role: req.body.role })
+        if (!roles) return handleResponse.response(res, 404, 'Role not found');
+        return roles.update({ name: req.body.name })
           .then(role => handleResponse.response(res, 200, { role }))
-          .catch(err => handleResponse.handleError(err, 403, res));
+          .catch(err => handleResponse.handleError(err, 400, res, 'Invalid role provided'));
       })
-      .catch(err => handleResponse.handleError(err, 403, res));
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invalid role id provided'));
   }
 
   /**
@@ -93,7 +93,7 @@ class RolesController {
           .then(role => handleResponse.response(res, 200, `${roles.role} deleted`))
           .catch(err => handleResponse.handleError(err, res));
       })
-      .catch(err => handleResponse.handleError(err, 403, res));
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invalid role id provided'));
   }
 }
 

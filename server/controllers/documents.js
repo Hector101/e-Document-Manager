@@ -17,9 +17,6 @@ class DocumentsController {
    * @returns {void}
    */
   create(req, res) {
-    if (req.body.access !== 'role' && req.body.access !== 'private' && req.body.access !== 'public') {
-      return res.status(403).send({ message: 'Invalid role' });
-    }
     const authenticadUser = res.locals.decoded;
     return models.Document.create({
       title: req.body.title,
@@ -27,8 +24,8 @@ class DocumentsController {
       access: req.body.access,
       userId: authenticadUser.id
     })
-    .then(document => handleResponse.response(res, 200, document))
-    .catch(err => handleResponse.handleError(err, 403, res));
+    .then(document => handleResponse.response(res, 200, { document }))
+    .catch(err => handleResponse.handleError(err, 400, res, 'Validation Error, Invalid input value'));
   }
 
   /**
@@ -64,13 +61,12 @@ class DocumentsController {
     return models.User.findById(req.params.id)
       .then((document) => {
         if (!document) return handleResponse.response(res, 404, 'Document not found');
-        if (loggedInUserId !== document.userId) {
-          return handleResponse.response(res, 403, 'Not allowed');
+        if (loggedInUserId === document.userId) {
+          return handleResponse.response(res, 200, document);
         }
-
-        return handleResponse.response(res, 200, document);
+        return handleResponse.response(res, 403, 'Not allowed');
       })
-      .catch(err => handleResponse.handleError(err, 403, res));
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invadid document ID'));
   }
 
   /**
@@ -81,7 +77,7 @@ class DocumentsController {
    * @returns {void}
    */
   searchDocument(req, res) {
-    const searchKey = `%${req.query.q}%` || `%${req.body.search}%`;
+    const searchKey = `%${req.query.q}%`;
     const authenticatedRoleId = res.locals.decoded.roleId;
     const userId = res.locals.decoded.id;
     const searchAttributes = authenticatedRoleId === 1 ? {
@@ -126,10 +122,10 @@ class DocumentsController {
         return handleResponse.response(res, 403, 'Update not allowed');
       }
       return documents.update(req.body, { fields: ['title', 'content', 'access'] })
-          .then(document => handleResponse.response(res, 200, document))
+          .then(document => handleResponse.response(res, 200, { document }))
           .catch(err => handleResponse.handleError(err, 403, res));
     })
-    .catch(err => handleResponse.handleError(err, 403, res));
+    .catch(err => handleResponse.handleError(err, 400, res, 'Invalid document ID'));
   }
 
   /**
@@ -143,15 +139,15 @@ class DocumentsController {
     const loggedInUserId = res.locals.decoded.id;
     return models.Document.findById(req.params.id)
       .then((document) => {
-        if (!document) return handleResponse.response(res, 404, 'User not found');
+        if (!document) return handleResponse.response(res, 404, 'Document not found');
         if (loggedInUserId !== document.userId) {
-          return handleResponse.response(res, 403, 'detele not allowed');
+          return handleResponse.response(res, 403, 'Operation not allowed');
         }
         return document.destroy()
         .then(doc => handleResponse.response(res, 200, 'Document deleted successfully'))
         .catch(err => handleResponse.handleError(err, 403, res, 'Document not deleted successfully'));
       })
-      .catch(err => handleResponse.handleError(err, 403, res));
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invalid document id provided'));
   }
 }
 

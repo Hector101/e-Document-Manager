@@ -35,7 +35,7 @@ class UsersController {
         });
         userDetails.id = user.id;
         return handleResponse.response(res, 201, { userDetails, token });
-      }).catch(err => handleResponse.handleError(err, 401, res, 'creating account failed'));
+      }).catch(err => handleResponse.handleError(err, 401, res, 'Account already exists'));
   }
 
   /**
@@ -60,7 +60,7 @@ class UsersController {
         return handleResponse.response(res, 403, 'Access denied, blocked');
       }
       if (!authorization.verifyPassword(req.body.password, user.password)) {
-        return handleResponse.response(res, 403, 'Password incorrect');
+        return handleResponse.response(res, 401, 'Password incorrect');
       }
       const userDetailsLogin = authorization.userDetails(user);
       const tokenLogin = authorization.generateToken({
@@ -71,7 +71,7 @@ class UsersController {
       userDetailsLogin.id = user.id;
       return handleResponse.response(res, 200, { userDetailsLogin, tokenLogin });
     })
-    .catch(err => handleResponse.handleError(err, 403, res, 'Login failed')) : handleResponse.response(res, 401, 'Provide either username or password');
+    .catch(err => handleResponse.handleError(err, 500, res, 'Invalid input field')) : handleResponse.response(res, 401, 'Provide either username or password');
   }
 
   /**
@@ -95,7 +95,7 @@ class UsersController {
         paginationDetails: pagination(users.count, limit, offset)
       }
     }))
-    .catch(err => handleResponse.handleError(err, 403, res));
+    .catch(err => handleResponse.handleError(err, 500, res, 'Server Error'));
   }
 
   /**
@@ -111,7 +111,7 @@ class UsersController {
         if (!user) return handleResponse.response(res, 404, 'User not found');
         return handleResponse.response(res, 200, { user: authorization.userDetails(user) });
       })
-      .catch(err => handleResponse.handleError(err, 403, res, 'User not found in database'));
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invalid user details provided'));
   }
 
   /**
@@ -140,8 +140,12 @@ class UsersController {
         ]
       }
     })
-    .then(users => handleResponse.response(res, 200, { users }))
-    .catch(err => handleResponse.handleError(err, 403, res, 'User does not exist'));
+    .then((users) => {
+      models.Role.findById(users.roleId)
+      .then(role => handleResponse.response(res, 200, { name: role.name }))
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invalid user role id'));
+    })
+    .catch(err => handleResponse.handleError(err, 500, res, 'Server Error'));
   }
 
   /**
@@ -155,28 +159,26 @@ class UsersController {
     const loggedInUserRole = res.locals.decoded.roleId;
     return models.User.findById(req.params.id)
         .then((users) => {
-          if (users.roleId === loggedInUserRole && loggedInUserRole === 1) {
-            return users.update(req.body, { fields: ['firstName', 'lastName', 'username', 'email', 'password'] })
-              .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'Update failed'));
-          } else if (users.roleId !== loggedInUserRole && loggedInUserRole === 1 && req.body.roleId) {
+          if (users.roleId !== loggedInUserRole && loggedInUserRole === 1) {
             return users.update(req.body, { fields: ['roleId', 'blocked'] })
               .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'User role update failed'));
-          } else if (users.roleId !== loggedInUserRole && loggedInUserRole === 2 && req.body.blocked) {
+              .catch(err => handleResponse.handleError(err, 400, res, 'Invalid input provided'));
+          }
+          if (users.roleId !== loggedInUserRole && loggedInUserRole === 2) {
             if (users.roleId === 1) {
-              return handleResponse.response(res, 403, 'Not permitted to block super user');
+              return handleResponse.response(res, 403, 'Not permitted to perform this action');
             }
             return users.update(req.body, { fields: ['blocked'] })
               .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'User role update failed'));
-          } else if (users.roleId === loggedInUserRole && loggedInUserRole !== 1) {
+              .catch(err => handleResponse.handleError(err, 400, res, 'Invalid input value'));
+          }
+          if (users.roleId === loggedInUserRole) {
             return users.update(req.body, { fields: ['firstName', 'lastName', 'username', 'email', 'password'] })
               .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'Update failed'));
+              .catch(err => handleResponse.handleError(err, 400, res, 'Invalid input value'));
           }
         })
-        .catch(err => handleResponse.handleError(err, 403, res, 'User does not exist'));
+        .catch(err => handleResponse.handleError(err, 400, res, 'Invalid user id provided'));
   }
 
   /**
@@ -201,7 +203,7 @@ class UsersController {
       }
       return handleResponse.response(res, 403, 'Access restricted');
     })
-    .catch(error => handleResponse.handleError(error, 403, res));
+    .catch(error => handleResponse.handleError(error, 500, res, 'Server Error'));
   }
 
   /**
@@ -212,7 +214,7 @@ class UsersController {
    * @returns {void}
    */
   searchUser(req, res) {
-    const searchKey = req.query.q || req.body.search;
+    const searchKey = req.query.q;
     models.User.findAll({
       attributes: ['firstName', 'lastName', 'username', 'email'],
       where: {
@@ -241,7 +243,7 @@ class UsersController {
       }
     })
     .then(users => handleResponse.response(res, 200, { users }))
-    .catch(err => handleResponse.handleError(err, 403, res, 'User does not exist'));
+    .catch(err => handleResponse.handleError(err, 404, res, 'User does not exist'));
   }
 
   /**
@@ -258,9 +260,9 @@ class UsersController {
         if (users.roleId === 1) return handleResponse.response(res, 403, 'can\'remove super user');
         return users.destroy()
         .then(user => handleResponse.response(res, 200, 'User deleted successfully'))
-        .catch(err => handleResponse.handleError(err, 403, res, 'User not deleted successfully'));
+        .catch(err => handleResponse.handleError(err, 403, res, 'Error occurred deleting user'));
       })
-      .catch(err => handleResponse.handleError(err, 403, res));
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invalid user id provided'));
   }
 }
 

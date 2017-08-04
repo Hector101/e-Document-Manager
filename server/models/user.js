@@ -11,14 +11,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        isAlpha: true
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        isAlpha: true
       }
     },
     username: {
@@ -26,10 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        notEmpty: {
-          args: true,
-          message: 'username must be alpha-numeric'
-        }
+        notEmpty: true,
+        isAlphanumeric: true
       }
     },
     email: {
@@ -59,6 +59,10 @@ module.exports = (sequelize, DataTypes) => {
     roleId: {
       type: DataTypes.INTEGER,
       defaultValue: 3,
+      validate: {
+        min: 2,
+        max: 5
+      }
     }
   });
   User.associate = (models) => {
