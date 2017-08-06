@@ -37,7 +37,7 @@ gulp.task('seed', ['migrate'], shell.task([
 ]));
 
 gulp.task('coverage', shell.task([
-  'NODE_ENV=test nyc mocha ./server/tests/**/*.js --timeout 20000',
+  'NODE_ENV=test nyc mocha ./server/tests/**/*.js --timeout 300000',
 ]));
 
 gulp.task('test', ['coverage']);
