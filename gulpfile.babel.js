@@ -12,18 +12,17 @@ gulp.task('nodemon', ['build'], () => {
   });
 });
 
+gulp.task('dev', ['nodemon'], () => gulp.watch('server/**/*.js', ['build']));
+
 gulp.task('build', () => gulp.src(['./server/**/*.js', '!./server/tests/**/*.js'])
   .pipe(babel({
     presets: ['es2015', 'stage-2']
   }))
   .pipe(gulp.dest('build')));
 
-gulp.task('copyConfig', () => (
-  gulp.src('server/**/*.json')
-  .pipe(gulp.dest('build'))
-));
-
-gulp.task('default', ['copyConfig', 'nodemon'], () => gulp.watch('server/**/*.js', ['build']));
+gulp.task('start', ['build'], shell.task([
+  'cross-env NODE_ENV=production node ./build/',
+]));
 
 gulp.task('cleardb', shell.task([
   'cross-env NODE_ENV=test sequelize db:migrate:undo:all',
@@ -42,3 +41,15 @@ gulp.task('coverage', ['seed'], shell.task([
 ]));
 
 gulp.task('test', ['coverage']);
+
+gulp.task('cleardb-dev', shell.task([
+  'cross-env NODE_ENV=delelopment sequelize db:migrate:undo:all',
+]));
+
+gulp.task('migrate-dev', ['cleardb-dev'], shell.task([
+  'cross-env NODE_ENV=delelopment sequelize db:migrate',
+]));
+
+gulp.task('seed-dev', ['migrate-dev'], shell.task([
+  'cross-env NODE_ENV=delelopment sequelize db:seed:all',
+]));

@@ -32,7 +32,7 @@ describe('User model', () => {
       models.User.create(invalidUser)
       .then()
       .catch((err) => {
-        expect(err.errors[0].message).toEqual('Validation isAlpha on lastName failed');
+        expect(err.errors[0].message).toEqual('Last name should be alphabets');
         done();
       });
     });

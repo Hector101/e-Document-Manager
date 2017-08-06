@@ -27,7 +27,7 @@ describe('User', () => {
       .send(superAdminLoginDetail)
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body).toIncludeKeys(['tokenLogin', 'userDetailsLogin']);
+        expect(res.body).toIncludeKeys(['token', 'user']);
         done();
       });
     });
@@ -43,7 +43,7 @@ describe('User', () => {
       });
     });
 
-    it('should login not login user with incorrect password', (done) => {
+    it('should not login user with incorrect password', (done) => {
       chai.request(server)
       .post('/api/v1/users/login')
       .send(wrongLoginDetail)
@@ -59,8 +59,8 @@ describe('User', () => {
       .post('/api/v1/users/login')
       .send(invalidLoginDetail)
       .end((err, res) => {
-        expect(res.status).toBe(500);
-        expect(res.body.message).toEqual('Invalid input field');
+        expect(res.status).toBe(401);
+        expect(res.body.message).toEqual('Authentication failed');
         done();
       });
     });
@@ -94,8 +94,8 @@ describe('User', () => {
       .post('/api/v1/users')
       .send(existingUser)
       .end((err, res) => {
-        expect(res.status).toBe(401);
-        expect(res.body.message).toEqual('Account already exists');
+        expect(res.status).toBe(400);
+        expect(res.body.message).toEqual('User already exists');
         done();
       });
     });
@@ -106,7 +106,7 @@ describe('User', () => {
       .post('/api/v1/users/login')
       .send(superAdminLoginDetail)
       .end((err, res) => {
-        superAdminToken = res.body.tokenLogin;
+        superAdminToken = res.body.token;
         done();
       });
   });
@@ -115,7 +115,7 @@ describe('User', () => {
       .post('/api/v1/users/login')
       .send(adminLoginDetail)
       .end((err, res) => {
-        adminToken = res.body.tokenLogin;
+        adminToken = res.body.token;
         done();
       });
   });
@@ -125,7 +125,7 @@ describe('User', () => {
       .post('/api/v1/users/login')
       .send(anotherRegularUserDetail)
       .end((err, res) => {
-        regularUserToken = res.body.tokenLogin;
+        regularUserToken = res.body.token;
         done();
       });
   });
@@ -148,6 +148,7 @@ describe('User', () => {
       .set({ authorization: regularUserToken })
       .end((err, res) => {
         expect(res.status).toBe(403);
+        expect(res.body.message).toEqual('Not authorized, only admins allowed');
         done();
       });
     });
@@ -157,7 +158,7 @@ describe('User', () => {
       .get('/api/v1/users')
       .set({ authorization: 'jhsdgfgsgdhghdshg987ywedssd7sdgdhs' })
       .end((err, res) => {
-        expect(res.status).toBe(403);
+        expect(res.status).toBe(401);
         expect(res.body.message).toEqual('Authentication failed, invalid token');
         done();
       });
@@ -171,7 +172,9 @@ describe('User', () => {
       .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body.user).toBeAn('object');
+        expect(res.body.user).toIncludeKeys(['id', 'firstName', 'lastName', 'username', 'email', 'blocked']);
+        expect(res.body.user.firstName).toEqual('John');
+        expect(res.body.user.lastName).toEqual('Doe');
         done();
       });
     });
@@ -192,36 +195,14 @@ describe('User', () => {
       .get('/api/v1/users/h')
       .set({ authorization: superAdminToken })
       .end((err, res) => {
-        expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid user details provided');
+        expect(res.status).toBe(500);
+        expect(res.body.message).toEqual('Server Error Occurred');
         done();
       });
     });
   });
 
-  describe('POST /api/v1/users/role', () => {
-    it('should authorize user with status 200 and user roleId to be 3', (done) => {
-      chai.request(server)
-      .post('/api/v1/users/role')
-      .send({ token: regularUserToken, search: 'johndoe' })
-      .end((err, res) => {
-        expect(res.status).toBe(200);
-        expect(res.body.name).toEqual('user');
-        done();
-      });
-    });
 
-    it('should authorize user and throw error on invalid query key', (done) => {
-      chai.request(server)
-      .get('/api/v1/users/role')
-      .send({ token: superAdminToken })
-      .end((err, res) => {
-        expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid user details provided');
-        done();
-      });
-    });
-  });
 
   describe('PUT /api/v1/users/:id', () => {
     it('should update super admin lastName to "Mario"', (done) => {
@@ -241,7 +222,7 @@ describe('User', () => {
       .set({ authorization: superAdminToken })
       .send({ roleId: 2 })
       .end((err, res) => {
-        expect(res.body.user.roleId).toEqual(2);
+        expect(res.body.user.Role.name).toEqual('admin');
         done();
       });
     });
@@ -276,41 +257,8 @@ describe('User', () => {
       .set({ authorization: adminToken })
       .send({ blocked: true })
       .end((err, res) => {
-        expect(res.status).toEqual(400);
-        done();
-      });
-    });
-
-    it('should throw a validation erroe if roleId greater than 5', (done) => {
-      chai.request(server)
-      .put('/api/v1/users/6')
-      .set({ authorization: superAdminToken })
-      .send({ roleId: 7 })
-      .end((err, res) => {
-        expect(res.status).toEqual(400);
-        done();
-      });
-    });
-
-    it('should throw a validation error for invalid "blocked" value', (done) => {
-      chai.request(server)
-      .put('/api/v1/users/6')
-      .set({ authorization: adminToken })
-      .send({ blocked: 7548 })
-      .end((err, res) => {
-        expect(res.status).toEqual(400);
-        done();
-      });
-    });
-
-    it('should throw a validation error if an integer is passed to a field that accepts integer value', (done) => {
-      chai.request(server)
-      .put('/api/v1/users/6')
-      .set({ authorization: regularUserToken })
-      .send({ firstName: 32 })
-      .end((err, res) => {
-        expect(res.status).toEqual(400);
-        expect(res.body.message).toEqual('Invalid input value');
+        expect(res.status).toEqual(500);
+        expect(res.body.message).toBe('Server Error Occurred');
         done();
       });
     });
@@ -320,21 +268,43 @@ describe('User', () => {
     it('should respond with user own documents', (done) => {
       chai.request(server)
       .get('/api/v1/users/4/documents')
-      .set({ authorization: regularUserToken })
+      .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toEqual(200);
-        expect(res.body.message[0]).toIncludeKeys(['id', 'title', 'content', 'userId', 'access']);
+        expect(res.body.document[0]).toIncludeKeys(['id', 'title', 'content', 'userId', 'createdAt', 'updatedAt', 'User']);
         done();
       });
     });
 
     it('should restrict unauthrized users thattries to search others access others document', (done) => {
       chai.request(server)
-      .get('/api/v1/users/4/documents')
+      .get('/api/v1/users/3/documents')
       .set({ authorization: adminToken })
       .end((err, res) => {
         expect(res.status).toEqual(403);
-        expect(res.body.message).toEqual('Access restricted');
+        expect(res.body.document[0]).toIncludeKeys(['id', 'title', 'user', 'createdAt', 'updatedAt']);
+        done();
+      });
+    });
+
+    it('should respond with status 404 and "User not found", if user id does not exist', (done) => {
+      chai.request(server)
+      .get('/api/v1/users/9/documents')
+      .set({ authorization: adminToken })
+      .end((err, res) => {
+        expect(res.status).toEqual(404);
+        expect(res.body.message).toEqual('User not found');
+        done();
+      });
+    });
+
+    it('should respond with status 500 on server error', (done) => {
+      chai.request(server)
+      .get('/api/v1/users/i/documents')
+      .set({ authorization: adminToken })
+      .end((err, res) => {
+        expect(res.status).toEqual(500);
+        expect(res.body.message).toEqual('Server Error');
         done();
       });
     });
@@ -358,6 +328,16 @@ describe('User', () => {
       .end((err, res) => {
         expect(res.body.users[0].email).toEqual('johndoe@gmail.com');
         expect(res.body.users[1].email).toEqual('janedoe@gmail.com');
+        done();
+      });
+    });
+    it('expect query response of "nancy" to contain users with correct username and email"', (done) => {
+      chai.request(server)
+      .get('/api/v1/search/users/?q=nancy')
+      .set({ authorization: adminToken })
+      .end((err, res) => {
+        expect(res.body.users[0].username).toEqual('nancykate17');
+        expect(res.body.users[0].email).toEqual('nancykate17@gmail.com');
         done();
       });
     });
@@ -403,7 +383,7 @@ describe('User', () => {
       .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toEqual(400);
-        expect(res.body.message).toEqual('Invalid user id provided');
+        expect(res.body.message).toEqual('Invalid input');
         done();
       });
     });

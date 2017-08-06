@@ -17,7 +17,7 @@ describe('Documents', () => {
       .post('/api/v1/users/login')
       .send(superAdminLoginDetail)
       .end((err, res) => {
-        superAdminToken = res.body.tokenLogin;
+        superAdminToken = res.body.token;
         done();
       });
   });
@@ -26,7 +26,7 @@ describe('Documents', () => {
       .post('/api/v1/users/login')
       .send(adminLoginDetail)
       .end((err, res) => {
-        adminToken = res.body.tokenLogin;
+        adminToken = res.body.token;
         done();
       });
   });
@@ -36,7 +36,7 @@ describe('Documents', () => {
       .post('/api/v1/users/login')
       .send(anotherRegularUserDetail)
       .end((err, res) => {
-        regularUserToken = res.body.tokenLogin;
+        regularUserToken = res.body.token;
         done();
       });
   });
@@ -48,7 +48,8 @@ describe('Documents', () => {
       .set({ authorization: regularUserToken })
       .send(privateDocument)
       .end((err, res) => {
-        expect(res.status).toBe(200);
+        expect(res.status).toBe(201);
+        expect(res.body.document.title).toBe('count in countries without clearnce');
         done();
       });
     });
@@ -71,19 +72,20 @@ describe('Documents', () => {
       .send(invalidFieldDocument)
       .end((err, res) => {
         expect(res.status).toBe(400);
+        expect(res.body.message).toEqual('Document not created, check Input');
         done();
       });
     });
   });
 
   describe('GET /api/v1/documents', () => {
-    it('should not authorize a non super admin to get all documents with 403 ststus code', (done) => {
+    it('should not authorize a non admins to get all documents with 403 ststus code', (done) => {
       chai.request(server)
       .get('/api/v1/documents')
       .set({ authorization: regularUserToken })
       .end((err, res) => {
         expect(res.status).toBe(403);
-        expect(res.body.message).toEqual('Authorization failed, only admins allowed');
+        expect(res.body.message).toEqual('Not authorized, only admins allowed');
         done();
       });
     });
@@ -103,20 +105,22 @@ describe('Documents', () => {
   describe('GET /api/v1/documents/:id', () => {
     it('should respond with status code 404, when non existent document id is passed', (done) => {
       chai.request(server)
-      .get('/api/v1/documents/20')
+      .get('/api/v1/documents/65')
       .set({ authorization: adminToken })
       .end((err, res) => {
         expect(res.status).toBe(404);
+        expect(res.body.message).toEqual('Document not found');
         done();
       });
     });
 
     it('should respond with a 403 status code for unauthorized user', (done) => {
       chai.request(server)
-      .get('/api/v1/documents/5')
+      .get('/api/v1/documents/3')
       .set({ authorization: adminToken })
       .end((err, res) => {
         expect(res.status).toBe(403);
+        expect(res.body.message).toEqual('Not allowed');
         done();
       });
     });
@@ -125,8 +129,19 @@ describe('Documents', () => {
       .get('/api/v1/documents/eye')
       .set({ authorization: superAdminToken })
       .end((err, res) => {
-        expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invadid document ID');
+        expect(res.status).toBe(500);
+        expect(res.body.message).toEqual('Server Error Occurred');
+        done();
+      });
+    });
+
+    it('expect title to equal the title if document with id 7 in database', (done) => {
+      chai.request(server)
+      .get('/api/v1/documents/7')
+      .set({ authorization: superAdminToken })
+      .end((err, res) => {
+        expect(res.status).toBe(200);
+        expect(res.body.document.title).toEqual('My dream date was awesome');
         done();
       });
     });
@@ -175,7 +190,7 @@ describe('Documents', () => {
       .send({ title: 'How to stop global warming' })
       .end((err, res) => {
         expect(res.status).toBe(403);
-        expect(res.body.message).toEqual('Update not allowed');
+        expect(res.body.message).toEqual('Not permitted to edit document');
         done();
       });
     });
@@ -192,14 +207,14 @@ describe('Documents', () => {
       });
     });
 
-    it('should respond with 400 status and "Invalid document ID"', (done) => {
+    it('should respond with 400 status and "Invalid input"', (done) => {
       chai.request(server)
       .put('/api/v1/documents/rer')
       .set({ authorization: regularUserToken })
       .send({ title: 'How to stop global warming' })
       .end((err, res) => {
         expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid document ID');
+        expect(res.body.message).toEqual('Invalid input');
         done();
       });
     });
@@ -223,7 +238,7 @@ describe('Documents', () => {
       .set({ authorization: regularUserToken })
       .end((err, res) => {
         expect(res.status).toBe(403);
-        expect(res.body.message).toEqual('Operation not allowed');
+        expect(res.body.message).toEqual('Not permitted to delete document');
         done();
       });
     });
@@ -235,16 +250,6 @@ describe('Documents', () => {
       .end((err, res) => {
         expect(res.status).toBe(200);
         expect(res.body.message).toEqual('Document deleted successfully');
-        done();
-      });
-    });
-
-    it('should respond with 200 status and a message "Document deleted successfully"', (done) => {
-      chai.request(server)
-      .delete('/api/v1/documents/dsd')
-      .set({ authorization: regularUserToken })
-      .end((err, res) => {
-        expect(res.status).toBe(400);
         done();
       });
     });

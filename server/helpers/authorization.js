@@ -9,49 +9,44 @@ import handleResponse from '../helpers/handleResponse';
 /**
  * @description define all authentication related methods
  * @exports Authorization
- * @class Authorization
  */
-class Authorization {
+const Authorization = {
 
   /**
    * generate jwt token
    * @param {Object} user - user details
-   * @memberof Authorization
    * @returns {String} token
    */
   generateToken(user) {
     return jwt.sign(user, secret, {
       expiresIn: milliSeconds('7 days'),
     });
-  }
+  },
 
   /**
    * encrypt user password
    * @param {String} password - user password
    * @returns {String} - hashed password
-   * @memberof Authorization
    */
   encryptPassword(password) {
     const salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(password, salt);
-  }
+  },
 
   /**
    * verify entered user password with hashed
    * @param {String} password - user password
    * @param {String} hashedPassword = hashed passed
    * @returns {String} - hashed password
-   * @memberof Authorization
    */
   verifyPassword(password, hashedPassword) {
     return bcrypt.compareSync(password, hashedPassword);
-  }
+  },
 
   /**
    * collect user details
    * @param {Object} requestBody - request body object
    * @returns {Object} user details
-   * @memberof Authorization
    */
   userDetails(requestBody) {
     return {
@@ -61,17 +56,30 @@ class Authorization {
       username: requestBody.username,
       email: requestBody.email,
       blocked: requestBody.blocked,
-      roleId: requestBody.roleId || 3,
+      Role: requestBody.Role,
       createdAt: requestBody.createdAt,
       updatedAt: requestBody.updatedAt
     };
-  }
+  },
+  /**
+   * collect user details
+   * @param {Object} documents - all instance of user documents
+   * @returns {Object} user document
+   */
+  restrictDocument(documents) {
+    return documents.map(document => ({
+      id: document.id,
+      title: document.title,
+      user: document.User,
+      createdAt: document.createdAt,
+      updatedAt: document.updatedAt
+    }));
+  },
 
   /**
    * collect user details
    * @param {Object} requestBody - request body object
    * @returns {Object} user details
-   * @memberof Authorization
    */
   documents(requestBody) {
     return {
@@ -82,15 +90,14 @@ class Authorization {
       createdAt: requestBody.createdAt,
       updatedAt: requestBody.updatedAt
     };
-  }
+  },
 
   /**
    * verify if user is authenticated
    * @param {Object} req - request object
    * @param {Object} res - response object
    * @param {Function} next - pass control to next middleware
-   * @memberof Authorization
-   * @returns {void}
+   * @returns {Object} - server response payload
    */
   verifyUser(req, res, next) {
     const token = req.body.token || req.headers.authorization;
@@ -98,56 +105,60 @@ class Authorization {
     if (token) {
       jwt.verify(token, secret, (err, decoded) => {
         if (err) {
-          return handleResponse.response(res, 403, 'Authentication failed, invalid token');
+          return handleResponse.response(res, 401, 'Authentication failed, invalid token');
         }
-        
+
         models.User.findOne({
+          include: [{ model: models.Role, attributes: ['name'] }],
           where: {
             username: decoded.username
           }
         })
           .then((user) => {
-            if (user && user.blocked === true) return handleResponse.response(res, 403, 'Access denied, blocked');
+            if (!user) return handleResponse.response(res, 401, 'Account deactivated');
+            if (user.blocked === true) return handleResponse.response(res, 403, 'Access denied, blocked');
+            if (decoded.roleId === 1) {
+              decoded.isSuperAdmin = true;
+            } else if (decoded.roleId === 2) {
+              decoded.isAdmin = true;
+            }
+            decoded.role = user.Role.name;
+            req.decoded = decoded;
+            return next();
           });
-        res.locals.decoded = decoded;
-        next();
       });
     } else {
-      return res.status(403).send({ message: 'Authentication failed, token unavailable' });
+      return res.status(401).send({ message: 'Authentication failed, token unavailable' });
     }
-  }
+  },
 
   /**
    * verify if user has admin rights
    * @param {Object} req - request object from client
    * @param {Object} res - response object
    * @param {Function} next - next middleware
-   * @returns {void}
-   * @memberof Authorization
+   * @returns {Object} - server response payload
    */
   verifySuperAdmin(req, res, next) {
-    const adminRoleId = res.locals.decoded.roleId;
-    if (adminRoleId !== 1) {
-      return res.status(403).send({ message: 'Authorization failed, only super admin allowed' });
+    if (!req.decoded.isSuperAdmin) {
+      return handleResponse.response(res, 403, 'Not authorized, only super admin allowed');
     }
-    next();
-  }
+    return next();
+  },
 
   /**
    * verify if user has admin rights
    * @param {Object} req - request object from client
    * @param {Object} res - response object
    * @param {Function} next - next middleware
-   * @returns {void}
-   * @memberof Authorization
+   * @returns {Object} - server response payload
    */
   verifySuperAndAdmin(req, res, next) {
-    const adminRoleId = res.locals.decoded.roleId;
-    if (adminRoleId === 1 || adminRoleId === 2) {
+    if (req.decoded.isSuperAdmin || req.decoded.isAdmin) {
       return next();
     }
-    return res.status(403).send({ message: 'Authorization failed, only admins allowed' });
-  }
-}
+    return handleResponse.response(res, 403, 'Not authorized, only admins allowed');
+  },
+};
 
-export default new Authorization();
+export default Authorization;

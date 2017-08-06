@@ -18,7 +18,7 @@ describe('Documents', () => {
     .post('/api/v1/users/login')
     .send(superAdminLoginDetail)
     .end((err, res) => {
-      superAdminToken = res.body.tokenLogin;
+      superAdminToken = res.body.token;
       done();
     });
   });
@@ -90,8 +90,8 @@ describe('Documents', () => {
       .get('/api/v1/roles/dhf')
       .set({ authorization: superAdminToken })
       .end((err, res) => {
-        expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid role id provided');
+        expect(res.status).toBe(500);
+        expect(res.body.message).toEqual('Server Error');
         done();
       });
     });
@@ -141,7 +141,7 @@ describe('Documents', () => {
       .send({ name: 7645 })
       .end((err, res) => {
         expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid role provided');
+        expect(res.body.message).toEqual('Invalid input');
         done();
       });
     });
@@ -152,8 +152,8 @@ describe('Documents', () => {
       .set({ authorization: superAdminToken })
       .send(updateRole)
       .end((err, res) => {
-        expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid role id provided');
+        expect(res.status).toBe(500);
+        expect(res.body.message).toEqual('Server Error');
         done();
       });
     });
@@ -197,8 +197,8 @@ describe('Documents', () => {
       .delete('/api/v1/roles/nvd')
       .set({ authorization: superAdminToken })
       .end((err, res) => {
-        expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid role id provided');
+        expect(res.status).toBe(500);
+        expect(res.body.message).toEqual('Server Error');
         done();
       });
     });

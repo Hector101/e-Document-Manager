@@ -21,7 +21,7 @@ describe('User model', () => {
       models.Role.create(chiefEditor)
       .then()
       .catch((err) => {
-        expect(err.errors[0].message).toEqual('name must be unique');
+        expect(err.errors[0].message).toEqual('Role already exist');
 
         done();
       });

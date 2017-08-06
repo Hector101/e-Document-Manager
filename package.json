@@ -4,9 +4,10 @@
   "description": "A back-end project of a document management system",
   "main": "server/index.js",
   "scripts": {
-    "start": "./node_modules/.bin/gulp",
-    "build": "./node_modules/.bin/gulp dev",
-    "test": "./node_modules/.bin/gulp test"
+    "start": "./node_modules/.bin/gulp start",
+    "dev": "./node_modules/.bin/gulp dev",
+    "test": "./node_modules/.bin/gulp test",
+    "seed-dev": "./node_modules/.bin/gulp seed-dev"
   },
   "nyc": {
     "require": [
@@ -78,6 +79,6 @@
     "nyc": "^11.1.0",
     "pg": "^6.4.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.3.2"
+    "sequelize": "^4.4.2"
   }
 }

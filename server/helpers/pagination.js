@@ -6,15 +6,15 @@
  * @param {Number} limit - page limit
  * @param {Number} offset - page offset
  */
-export default (count, limit, offset) => {
+export default (totalCount, limit, offset) => {
   const page = Math.floor(offset / limit) + 1;
-  const pageCount = Math.ceil(count / limit);
-  const pageSize = (count - offset) > limit ? limit : (count - offset);
+  const pageCount = Math.ceil(totalCount / limit);
+  const pageSize = (totalCount - offset) > limit ? limit : (totalCount - offset);
 
   return {
     page,
     pageCount,
     pageSize,
-    totalCount: count
+    totalCount
   };
 };
