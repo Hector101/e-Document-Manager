@@ -40,7 +40,7 @@ describe('User model', () => {
 
   describe('#User.update', () => {
     it('should update a user by user id', (done) => {
-      models.User.findById('11')
+      models.User.findById('4')
         .then((user) => {
           user.update({ firstName: 'Ademola' })
             .then((userUpdate) => {
@@ -53,12 +53,11 @@ describe('User model', () => {
 
   describe('#User.destroy', () => {
     it('should delete a user by user id', (done) => {
-      models.User.findById('5')
+      models.User.findById('4')
         .then((user) => {
           user.destroy()
             .then((userUpdate) => {
               expect(userUpdate[0]).toNotExist();
-
               done();
             });
         });
