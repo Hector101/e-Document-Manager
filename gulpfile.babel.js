@@ -29,14 +29,14 @@ gulp.task('cleardb', shell.task([
 ]));
 
 gulp.task('migrate', ['cleardb'], shell.task([
-  'cross-env NODE_ENV=test sequelize db:migrate',
+  'NODE_ENV=test sequelize db:migrate',
 ]));
 
 gulp.task('seed', ['migrate'], shell.task([
-  'cross-env NODE_ENV=test sequelize db:seed:all',
+  'NODE_ENV=test sequelize db:seed:all',
 ]));
 
-gulp.task('coverage', shell.task([
+gulp.task('coverage', ['seed'], shell.task([
   'NODE_ENV=test nyc mocha ./server/tests/**/*.js --timeout 300000',
 ]));
 
