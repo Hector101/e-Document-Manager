@@ -6,7 +6,7 @@
   "scripts": {
     "start": "./node_modules/.bin/gulp start",
     "dev": "./node_modules/.bin/gulp dev",
-    "test": "./node_modules/.bin/gulp test",
+    "test": "NODE_ENV=test nyc mocha ./server/tests/**/*.js --timeout 30000",
     "seed-dev": "./node_modules/.bin/gulp seed-dev"
   },
   "nyc": {
