@@ -32,8 +32,7 @@ describe('User model', () => {
       models.Document.create(invalidFieldDocument)
       .then()
       .catch((err) => {
-          console.log(err);
-        // expect(err.errors[0].message).toEqual('Validation isIn on access failed');
+        expect(err.errors[0].message).toEqual('Validation isIn on access failed');
 
         done();
       });

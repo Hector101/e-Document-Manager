@@ -40,7 +40,7 @@ gulp.task('coverage', ['seed'], shell.task([
   'NODE_ENV=test nyc mocha ./server/tests/**/*.js --timeout 300000',
 ]));
 
-// gulp.task('test', ['coverage']);
+gulp.task('test', ['coverage']);
 
 gulp.task('cleardb-dev', shell.task([
   'cross-env NODE_ENV=delelopment sequelize db:migrate:undo:all',
