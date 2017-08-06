@@ -12,15 +12,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        notEmpty: true
+        notEmpty: { args: true, msg: 'Document title should not be empty' },
+        len: { args: [10, 70], msg: 'Title should be at least 10 characters and at most 70' }
       }
     },
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
-        notEmpty: true
-      }
+        notEmpty: { args: true, msg: 'Document content should not be empty' }
+      },
     },
     userId: {
       type: DataTypes.INTEGER,
@@ -30,13 +31,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'public',
+      validate: {
+        isIn: [['role', 'private', 'public']],
+      }
     }
   });
 
   Document.associate = (models) => {
     Document.belongsTo(models.User, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
+      onDelete: 'SET NULL',
     });
   };
   return Document;

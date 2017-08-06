@@ -11,14 +11,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { args: true, msg: 'First name should not be empty' },
+        isAlpha: { args: true, msg: 'First name should be an alphabets' }
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { args: true, msg: 'Last name should not be empty' },
+        isAlpha: { args: true, msg: 'Last name should be alphabets' }
       }
     },
     username: {
@@ -26,10 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        notEmpty: {
-          args: true,
-          message: 'username must be alpha-numeric'
-        }
+        notEmpty: { args: true, msg: 'username name should not be empty' },
+        isAlphanumeric: { args: true, msg: 'First name must not be empty' }
       }
     },
     email: {
@@ -37,18 +37,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: {
-          args: true,
-          msg: 'email address entered not valid'
-        }
+        isEmail: { args: true, msg: 'email address entered not valid' }
       }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true,
-        min: 6
+        notEmpty: { args: true, msg: 'Password must not be empty' },
+        min: { args: 6, msg: 'Password should be at least 6 characters' }
       }
     },
     blocked: {
@@ -58,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     roleId: {
       type: DataTypes.INTEGER,
-      defaultValue: 3,
+      defaultValue: 3
     }
   });
   User.associate = (models) => {
@@ -67,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     User.belongsTo(models.Role, {
       foreignKey: 'roleId',
-      onDelete: 'CASCADE',
+      onDelete: 'SET DEFAULT',
     });
   };
   return User;

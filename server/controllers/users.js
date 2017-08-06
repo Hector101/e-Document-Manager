@@ -3,18 +3,14 @@ import authorization from '../helpers/authorization';
 import handleResponse from '../helpers/handleResponse';
 import pagination from '../helpers/pagination';
 
-/**
- * define user controllers
- * @class UsersController
- */
-class UsersController {
+
+const UsersController = {
 
   /**
    * @description create user account
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @memberof UserControllers
-   * @returns {void}
+   * @returns {Object} - created user object
    */
   create(req, res) {
     const userDetails = authorization.userDetails(req.body);
@@ -35,18 +31,21 @@ class UsersController {
         });
         userDetails.id = user.id;
         return handleResponse.response(res, 201, { userDetails, token });
-      }).catch(err => handleResponse.handleError(err, 401, res, 'creating account failed'));
-  }
+      }).catch(err => handleResponse.handleError(err, 400, res, 'User already exists'));
+  },
 
   /**
    * @description authenticate user account
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @memberof UserControllers
-   * @returns {void}
+   * @returns {Object} - user details
   */
   login(req, res) {
-    return req.body.email || req.body.username ? models.User.findOne({
+    if (!(req.body.email || req.body.username)) {
+      return handleResponse.response(res, 401, 'Provide either username or password');
+    }
+    return models.User.findOne({
+      include: [{ model: models.Role, attributes: ['name'] }],
       where: {
         $or: [{
           username: req.body.username,
@@ -60,26 +59,25 @@ class UsersController {
         return handleResponse.response(res, 403, 'Access denied, blocked');
       }
       if (!authorization.verifyPassword(req.body.password, user.password)) {
-        return handleResponse.response(res, 403, 'Password incorrect');
+        return handleResponse.response(res, 401, 'Password incorrect');
       }
       const userDetailsLogin = authorization.userDetails(user);
-      const tokenLogin = authorization.generateToken({
+      const token = authorization.generateToken({
         id: user.id,
         username: user.username,
         roleId: user.roleId
       });
       userDetailsLogin.id = user.id;
-      return handleResponse.response(res, 200, { userDetailsLogin, tokenLogin });
+      return handleResponse.response(res, 200, { user: userDetailsLogin, token });
     })
-    .catch(err => handleResponse.handleError(err, 403, res, 'Login failed')) : handleResponse.response(res, 401, 'Provide either username or password');
-  }
+    .catch(err => handleResponse.handleError(err, 401, res, 'Authentication failed'));
+  },
 
   /**
    * @description get all instance of users
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @returns {void}
-   * @memberof UserControllers
+   * @returns {Object} - user details
    */
   getUsers(req, res) {
     const limit = req.query.limit || 20;
@@ -95,15 +93,14 @@ class UsersController {
         paginationDetails: pagination(users.count, limit, offset)
       }
     }))
-    .catch(err => handleResponse.handleError(err, 403, res));
-  }
+    .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
+  },
 
   /**
    * @description get user by id from database
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @returns {void}
-   * @memberof UserControllers
+   * @returns {Object} - user object
    */
   getUser(req, res) {
     return models.User.findById(req.params.id)
@@ -111,110 +108,74 @@ class UsersController {
         if (!user) return handleResponse.response(res, 404, 'User not found');
         return handleResponse.response(res, 200, { user: authorization.userDetails(user) });
       })
-      .catch(err => handleResponse.handleError(err, 403, res, 'User not found in database'));
-  }
-
-  /**
-   * @description get user document
-   * @param {Object} req - request object from client
-   * @param {Object} res - response object from server
-   * @returns {void}
-   * @memberof UserControllers
-   */
-  getUserRole(req, res) {
-    const searchKey = req.body.search;
-    models.User.findOne({
-      attributes: ['roleId'],
-      where: {
-        $or: [
-          {
-            username: {
-              $iLike: searchKey
-            }
-          },
-          {
-            email: {
-              $iLike: searchKey
-            }
-          }
-        ]
-      }
-    })
-    .then(users => handleResponse.response(res, 200, { users }))
-    .catch(err => handleResponse.handleError(err, 403, res, 'User does not exist'));
-  }
+      .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
+  },
 
   /**
    * @description update user details
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @returns {void}
-   * @memberof UserControllers
+   * @returns {Object} - updated user object
    */
   updateUser(req, res) {
-    const loggedInUserRole = res.locals.decoded.roleId;
-    return models.User.findById(req.params.id)
-        .then((users) => {
-          if (users.roleId === loggedInUserRole && loggedInUserRole === 1) {
-            return users.update(req.body, { fields: ['firstName', 'lastName', 'username', 'email', 'password'] })
-              .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'Update failed'));
-          } else if (users.roleId !== loggedInUserRole && loggedInUserRole === 1 && req.body.roleId) {
-            return users.update(req.body, { fields: ['roleId', 'blocked'] })
-              .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'User role update failed'));
-          } else if (users.roleId !== loggedInUserRole && loggedInUserRole === 2 && req.body.blocked) {
-            if (users.roleId === 1) {
-              return handleResponse.response(res, 403, 'Not permitted to block super user');
-            }
-            return users.update(req.body, { fields: ['blocked'] })
-              .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'User role update failed'));
-          } else if (users.roleId === loggedInUserRole && loggedInUserRole !== 1) {
-            return users.update(req.body, { fields: ['firstName', 'lastName', 'username', 'email', 'password'] })
-              .then(user => handleResponse.response(res, 200, { user }))
-              .catch(err => handleResponse.handleError(err, 403, res, 'Update failed'));
-          }
-        })
-        .catch(err => handleResponse.handleError(err, 403, res, 'User does not exist'));
-  }
+    const loggedInUserId = req.decoded.id;
+    return models.User.findOne({
+      include: [{ model: models.Role, attributes: ['name'] }],
+      where: {
+        id: req.params.id,
+      },
+    })
+    .then((user) => {
+      let fields = ['firstName', 'lastName', 'username', 'email', 'password'];
+      if (user.id !== loggedInUserId && req.decoded.isSuperAdmin) {
+        fields = ['roleId', 'blocked'];
+      } else if (user.id !== loggedInUserId && req.decoded.isAdmin && user.Role.name !== 'superadmin') {
+        fields = ['blocked'];
+      } else if (user.id !== loggedInUserId) {
+        return handleResponse.response(res, 403, 'Not permitted to perform this action');
+      }
+      return user.update(req.body, { fields })
+      .then(userUpdate => handleResponse.response(res, 200, { user: authorization.userDetails(userUpdate) }))
+      .catch(err => handleResponse.handleError(err, 400, res, 'invalid input'));
+    })
+    .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
+  },
 
   /**
    * @description get user document
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @returns {void}
-   * @memberof UserControllers
+   * @returns {Object} - user document object
    */
   getUserDocuments(req, res) {
-    const loggedInUserId = res.locals.decoded.id;
-    const loggedInRoleId = res.locals.decoded.roleId;
+    const loggedInUserId = req.decoded.id;
     return models.Document.findAll({
       where: { userId: req.params.id },
       include: [{
         model: models.User,
-        attributes: ['id'] }],
+        attributes: ['firstName', 'lastName'] }],
     })
-    .then((documents) => {
-      if (loggedInUserId === documents[0].userId || loggedInRoleId === 1) {
-        return handleResponse.response(res, 200, documents);
+    .then((document) => {
+      if (document.length === 0) return handleResponse.response(res, 404, 'User not found');
+      if (!(loggedInUserId === req.params.id || req.decoded.isSuperAdmin)) {
+        return handleResponse.response(res, 403, { document: authorization.restrictDocument(document) });
       }
-      return handleResponse.response(res, 403, 'Access restricted');
+      return handleResponse.response(res, 200, { document });
     })
-    .catch(error => handleResponse.handleError(error, 403, res));
-  }
+    .catch(error => handleResponse.handleError(error, 500, res, 'Server Error'));
+  },
 
   /**
    * search user instances in database
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @memberof UserControllers
-   * @returns {void}
+   * @returns {Object} - user document object
    */
   searchUser(req, res) {
-    const searchKey = req.query.q || req.body.search;
+    const searchKey = req.query.q;
     models.User.findAll({
       attributes: ['firstName', 'lastName', 'username', 'email'],
+      include: [{ model: models.Role, attributes: ['name'] }],
       where: {
         $or: [
           {
@@ -241,28 +202,29 @@ class UsersController {
       }
     })
     .then(users => handleResponse.response(res, 200, { users }))
-    .catch(err => handleResponse.handleError(err, 403, res, 'User does not exist'));
-  }
+    .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
+  },
 
   /**
    * delete user from database
    * @param {Object} req - request object from client
    * @param {Object} res - response object from server
-   * @memberof UserControllers
-   * @returns {void}
+   * @returns {Object} - delete response message object
    */
   deleteUser(req, res) {
-    return models.User.findById(req.params.id)
-      .then((users) => {
-        if (!users) return handleResponse.response(res, 404, 'User not found');
-        if (users.roleId === 1) return handleResponse.response(res, 403, 'can\'remove super user');
-        return users.destroy()
-        .then(user => handleResponse.response(res, 200, 'User deleted successfully'))
-        .catch(err => handleResponse.handleError(err, 403, res, 'User not deleted successfully'));
+    return models.User.findById(req.params.id, {
+      include: [{ model: models.Role, attributes: ['name'] }],
+    })
+      .then((user) => {
+        if (!user) return handleResponse.response(res, 404, 'User not found');
+        if (user.Role.name === 'superadmin') return handleResponse.response(res, 403, 'can\'remove super user');
+        return user.destroy()
+        .then(() => handleResponse.response(res, 200, 'User deleted successfully'))
+        .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
       })
-      .catch(err => handleResponse.handleError(err, 403, res));
-  }
-}
+      .catch(err => handleResponse.handleError(err, 400, res, 'Invalid input'));
+  },
+};
 
 
-export default new UsersController();
+export default UsersController;

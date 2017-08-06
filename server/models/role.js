@@ -10,9 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: { args: true, msg: 'Role already exist' },
       validate: {
-        notEmpty: true
+        notEmpty: { args: true, msg: 'Role should not be empty' },
+        isAlpha: { args: true, msg: 'Only letters accepted' }
       }
     }
   });
