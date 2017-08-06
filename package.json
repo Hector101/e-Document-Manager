@@ -21,7 +21,7 @@
     "sourceMap": false,
     "instrument": false,
     "exclude": [
-      "server/tests"
+      "server/test"
     ]
   },
   "repository": {
