@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/Hector101/e-Document-Manager.svg?branch=master)](https://travis-ci.org/Hector101/e-Document-Manager)
+[![Code Climate](https://codeclimate.com/github/Hector101/e-Document-Manager/badges/gpa.svg)](https://codeclimate.com/github/Hector101/e-Document-Manager)
+[![Coverage Status](https://coveralls.io/repos/github/Hector101/e-Document-Manager/badge.svg)](https://coveralls.io/github/Hector101/e-Document-Manager)
 
 ## E-Document Management System
 
