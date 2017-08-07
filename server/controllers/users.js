@@ -172,8 +172,12 @@ const UsersController = {
    * @returns {Object} - user document object
    */
   searchUser(req, res) {
+    const limit = req.query.limit || 20;
+    const offset = req.query.offset || 0;
     const searchKey = req.query.q;
-    models.User.findAll({
+    models.User.findAndCount({
+      offset,
+      limit,
       attributes: ['firstName', 'lastName', 'username', 'email'],
       include: [{ model: models.Role, attributes: ['name'] }],
       where: {
@@ -201,7 +205,10 @@ const UsersController = {
         ]
       }
     })
-    .then(users => handleResponse.response(res, 200, { users }))
+    .then((users) => {
+      const paginationDetails = pagination(users.count, limit, offset);
+      return handleResponse.response(res, 200, { users: users.rows, pagination: paginationDetails });
+    })
     .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
   },
 
@@ -224,6 +231,17 @@ const UsersController = {
       })
       .catch(err => handleResponse.handleError(err, 400, res, 'Invalid input'));
   },
+  /**
+  * Logout a user
+  * @param {Object} req request object
+  * @param {Object} res response object
+  * @returns {Object} response object
+  */
+  logout(req, res) {
+    return res.status(200).send({
+      message: 'Logout successful'
+    });
+  }
 };
 
 

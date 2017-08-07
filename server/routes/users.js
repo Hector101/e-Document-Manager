@@ -9,6 +9,7 @@ import authorization from '../helpers/authorization';
 export default (router) => {
   router.post('/api/v1/users/login', userController.login);
   router.post('/api/v1/users', userController.create);
+  router.get('/api/v1/users/logout', userController.logout);
 
   router.get('/api/v1/users', authorization.verifyUser, authorization.verifySuperAndAdmin, userController.getUsers);
   router.get('/api/v1/users/:id', authorization.verifyUser, userController.getUser);
