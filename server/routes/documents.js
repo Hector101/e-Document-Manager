@@ -7,7 +7,7 @@ export default (router) => {
 
   router.get('/api/v1/documents', authorization.verifyUser, authorization.verifySuperAndAdmin, documentsController.getAllDocument);
   router.get('/api/v1/documents/:id', authorization.verifyUser, documentsController.getDocument);
-  router.get('/api/v1/search/documents', authorization.verifyUser, documentsController.searchDocument);
+  router.get('/api/v1/search/documents', authorization.verifyUser, documentsController.getAllDocument);
 
   router.put('/api/v1/documents/:id', authorization.verifyUser, documentsController.updateDocument);
 
