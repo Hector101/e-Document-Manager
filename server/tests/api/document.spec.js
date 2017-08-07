@@ -163,8 +163,8 @@ describe('Documents', () => {
       .get('/api/v1/search/documents/?q=how')
       .set({ authorization: regularUserToken })
       .end((err, res) => {
-        expect(res.body.documents[0].title).toEqual('How to eat an elephant');
-        expect(res.body.documents[1].title).toEqual('How much does it cost to buy a title');
+        expect(res.body.pagination.row[0].title).toEqual('How to eat an elephant');
+        expect(res.body.pagination.row[1].title).toEqual('How much does it cost to buy a title');
         done();
       });
     });

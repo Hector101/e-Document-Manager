@@ -31,16 +31,43 @@ const DocumentsController = {
    * @returns {Object} - pagination document or server error response
    */
   getAllDocument(req, res) {
+    let searchKey = '%%';
+    const userId = req.decoded.id;
+    if (req.query.q) {
+      searchKey = `%${req.query.q}%`;
+    }
+    const searchAttributes = req.decoded.isSuperAdmin ?
+    ({
+      $or: [{ title: { $iLike: searchKey } }]
+    }) :
+    ({
+      $or: [{ access: { $or: ['public', 'role'] } }, { userId }],
+      title: { $iLike: searchKey }
+    });
+    const limit = req.query.limit || 20;
+    const offset = req.query.offset || 0;
     return models.Document.findAndCount({
-      limit: req.query.limit || 20,
-      offset: req.query.offset || 0,
+      limit,
+      offset,
+      attributes: ['id', 'title', 'content', 'access', 'userId', 'createdAt', 'updatedAt'],
+      where: searchAttributes,
+      include: [
+        {
+          model: models.User,
+          attributes: ['roleId']
+        }
+      ]
     })
-    .then(documents => handleResponse.response(res, 200, {
-      pagination: {
-        row: documents.rows,
-        paginationDetails: pagination(documents.count, req.query.limit, req.query.offset)
-      }
-    }))
+    .then((documents) => {
+      const filteredDocuments = documents.rows.filter(document => !(document.User.roleId === req.decoded.roleId && document.roleId === 'role'));
+      const searchDocument = req.decoded.isSuperAdmin ? documents.rows : filteredDocuments;
+      return handleResponse.response(res, 200, {
+        pagination: {
+          row: searchDocument,
+          paginationDetails: pagination(documents.count, limit, offset)
+        }
+      });
+    })
     .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
   },
 
@@ -62,41 +89,6 @@ const DocumentsController = {
       })
       .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
   },
-
-  /**
-   * search documents instances in database
-   * @param {Object} req - request object from client
-   * @param {Object} res - response object from server
-   * @returns {Object} - search document or server error response
-   */
-  searchDocument(req, res) {
-    const searchKey = `%${req.query.q}%`;
-    const userId = req.decoded.id;
-    const searchAttributes = req.decoded.isSuperAdmin ?
-    ({
-      $or: [{ title: { $iLike: searchKey } }]
-    }) :
-    ({
-      $or: [{ access: { $or: ['public', 'role'] } }, { userId }],
-      title: { $iLike: searchKey }
-    });
-    return models.Document.findAll({
-      attributes: ['id', 'title', 'content', 'access', 'userId', 'createdAt', 'updatedAt'],
-      where: searchAttributes,
-      include: [
-        {
-          model: models.User,
-          attributes: ['roleId']
-        }
-      ]
-    })
-    .then((documents) => {
-      const filteredDocuments = documents.filter(document => !(document.User.roleId === req.decoded.roleId && document.roleId === 'role'));
-      return handleResponse.response(res, 200, { documents: filteredDocuments });
-    })
-    .catch(err => handleResponse.handleError(err, 500, res, 'Server Error Occurred'));
-  },
-
 
 /**
  * @description update document details
