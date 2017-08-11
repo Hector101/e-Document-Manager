@@ -22,7 +22,7 @@ describe('User model', () => {
       models.User.create(newUser)
       .then()
       .catch((err) => {
-        expect(err.errors[0].message).toEqual('username must be unique');
+        expect(err.errors[0].message).toEqual('User already exist, choose a different username');
 
         done();
       });
@@ -32,7 +32,7 @@ describe('User model', () => {
       models.User.create(invalidUser)
       .then()
       .catch((err) => {
-        expect(err.errors[0].message).toEqual('Last name should be alphabets');
+        expect(err.errors[0].message).toEqual('Last Name Is Invalid');
         done();
       });
     });

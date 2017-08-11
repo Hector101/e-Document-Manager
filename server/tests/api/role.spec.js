@@ -31,6 +31,7 @@ describe('Documents', () => {
       .send(writerRole)
       .end((err, res) => {
         expect(res.status).toBe(201);
+        expect(res.body.name).toBe('writer');
         done();
       });
     });
@@ -54,9 +55,9 @@ describe('Documents', () => {
       .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body.role[0].name).toEqual('superadmin');
-        expect(res.body.role[1].name).toEqual('admin');
-        expect(res.body.role[2].name).toEqual('user');
+        expect(res.body.message[0].name).toEqual('superadmin');
+        expect(res.body.message[1].name).toEqual('admin');
+        expect(res.body.message[2].name).toEqual('user');
         done();
       });
     });
@@ -69,7 +70,7 @@ describe('Documents', () => {
       .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body.role.name).toEqual('superadmin');
+        expect(res.body.name).toEqual('superadmin');
         done();
       });
     });
@@ -90,8 +91,8 @@ describe('Documents', () => {
       .get('/api/v1/roles/dhf')
       .set({ authorization: superAdminToken })
       .end((err, res) => {
-        expect(res.status).toBe(500);
-        expect(res.body.message).toEqual('Server Error');
+        expect(res.status).toBe(400);
+        expect(res.body.message).toEqual('Invalid role id');
         done();
       });
     });
@@ -129,7 +130,7 @@ describe('Documents', () => {
       .send(updateRole)
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body.role.name).toEqual('reviewer');
+        expect(res.body.name).toEqual('reviewer');
         done();
       });
     });
@@ -138,22 +139,22 @@ describe('Documents', () => {
       chai.request(server)
       .put('/api/v1/roles/4')
       .set({ authorization: superAdminToken })
-      .send({ name: 7645 })
+      .send({ name: '7645' })
       .end((err, res) => {
         expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid input');
+        expect(res.body.message).toEqual('Provide a valid role name');
         done();
       });
     });
 
-    it('should respond with status 400 and message "Invalid role id provided"', (done) => {
+    it('should respond with status 400 and message "Invalid role id"', (done) => {
       chai.request(server)
       .put('/api/v1/roles/nvd')
       .set({ authorization: superAdminToken })
       .send(updateRole)
       .end((err, res) => {
-        expect(res.status).toBe(500);
-        expect(res.body.message).toEqual('Server Error');
+        expect(res.status).toBe(400);
+        expect(res.body.message).toEqual('Invalid role id');
         done();
       });
     });
@@ -166,7 +167,7 @@ describe('Documents', () => {
       .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toBe(403);
-        expect(res.body.message).toEqual('Can\'t delete super admin role');
+        expect(res.body.message).toEqual('Can\'t delete superadmin role');
         done();
       });
     });
@@ -182,23 +183,13 @@ describe('Documents', () => {
       });
     });
 
-    it('should respond with status 404 and message "Role not found"', (done) => {
-      chai.request(server)
-      .delete('/api/v1/roles/5')
-      .set({ authorization: superAdminToken })
-      .end((err, res) => {
-        expect(res.status).toBe(200);
-        done();
-      });
-    });
-
     it('should respond with status 400 and message "Invalid role id provided"', (done) => {
       chai.request(server)
       .delete('/api/v1/roles/nvd')
       .set({ authorization: superAdminToken })
       .end((err, res) => {
-        expect(res.status).toBe(500);
-        expect(res.body.message).toEqual('Server Error');
+        expect(res.status).toBe(400);
+        expect(res.body.message).toEqual('Invalid role id');
         done();
       });
     });

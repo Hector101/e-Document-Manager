@@ -31,7 +31,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      blocked: {
+      isBlocked: {
         type: Sequelize.BOOLEAN,
         allowNull: false
       },

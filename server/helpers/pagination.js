@@ -2,7 +2,7 @@
 /**
  * @description evaluate pagination details
  * @returns {Object} filtered user details
- * @param {Number} count - total number of user instances
+ * @param {Number} totalCount - total number of user instances
  * @param {Number} limit - page limit
  * @param {Number} offset - page offset
  */

@@ -49,6 +49,8 @@ Install nodejs version 6 and above
 ## How to contribute
 To contribute, fork this repo to your private repository and create a pull request based on the feature you want to add.
 However ensure to follow the AirBnB coding style guide.
++  Visit the [Wiki page](https://github.com/Hector101/e-Document-Manager/wiki) to learn about the Conventions to follow, to contribute to this project.
++ This project uses the AirBnB Eslint style guide
 
 ## Disclaimer
 This app and its functions are limited by time constraint and is in no way at its best.

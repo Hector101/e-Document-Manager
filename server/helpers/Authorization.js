@@ -3,7 +3,7 @@ import milliSeconds from 'ms';
 import bcrypt from 'bcrypt';
 import secret from './getSecret';
 import models from '../models';
-import handleResponse from '../helpers/handleResponse';
+import HandleResponse from '../helpers/HandleResponse';
 
 
 /**
@@ -44,55 +44,6 @@ const Authorization = {
   },
 
   /**
-   * collect user details
-   * @param {Object} requestBody - request body object
-   * @returns {Object} user details
-   */
-  userDetails(requestBody) {
-    return {
-      id: requestBody.id,
-      firstName: requestBody.firstName,
-      lastName: requestBody.lastName,
-      username: requestBody.username,
-      email: requestBody.email,
-      blocked: requestBody.blocked,
-      Role: requestBody.Role,
-      createdAt: requestBody.createdAt,
-      updatedAt: requestBody.updatedAt
-    };
-  },
-  /**
-   * collect user details
-   * @param {Object} documents - all instance of user documents
-   * @returns {Object} user document
-   */
-  restrictDocument(documents) {
-    return documents.map(document => ({
-      id: document.id,
-      title: document.title,
-      user: document.User,
-      createdAt: document.createdAt,
-      updatedAt: document.updatedAt
-    }));
-  },
-
-  /**
-   * collect user details
-   * @param {Object} requestBody - request body object
-   * @returns {Object} user details
-   */
-  documents(requestBody) {
-    return {
-      id: requestBody.id,
-      title: requestBody.title,
-      content: requestBody.content,
-      access: requestBody.access,
-      createdAt: requestBody.createdAt,
-      updatedAt: requestBody.updatedAt
-    };
-  },
-
-  /**
    * verify if user is authenticated
    * @param {Object} req - request object
    * @param {Object} res - response object
@@ -101,11 +52,10 @@ const Authorization = {
    */
   verifyUser(req, res, next) {
     const token = req.body.token || req.headers.authorization;
-
     if (token) {
       jwt.verify(token, secret, (err, decoded) => {
         if (err) {
-          return handleResponse.response(res, 401, 'Authentication failed, invalid token');
+          return HandleResponse.getResponse(res, 401, 'Authentication failed, invalid token');
         }
 
         models.User.findOne({
@@ -115,8 +65,8 @@ const Authorization = {
           }
         })
           .then((user) => {
-            if (!user) return handleResponse.response(res, 401, 'Account deactivated');
-            if (user.blocked === true) return handleResponse.response(res, 403, 'Access denied, blocked');
+            if (!user) return HandleResponse.getResponse(res, 401, 'Account does not exist');
+            if (user.isBlocked === true) return HandleResponse.getResponse(res, 403, 'Access denied, you\'re blocked');
             if (decoded.roleId === 1) {
               decoded.isSuperAdmin = true;
             } else if (decoded.roleId === 2) {
@@ -124,11 +74,12 @@ const Authorization = {
             }
             decoded.role = user.Role.name;
             req.decoded = decoded;
+            req.user = user;
             return next();
-          });
+          }).catch(err => HandleResponse.getResponse(res, 500, err));
       });
     } else {
-      return res.status(401).send({ message: 'Authentication failed, token unavailable' });
+      return HandleResponse.getResponse(res, 401, 'Authentication failed, token unavailable');
     }
   },
 
@@ -141,7 +92,7 @@ const Authorization = {
    */
   verifySuperAdmin(req, res, next) {
     if (!req.decoded.isSuperAdmin) {
-      return handleResponse.response(res, 403, 'Not authorized, only super admin allowed');
+      return HandleResponse.getResponse(res, 403, 'Not authorized, only super admin allowed');
     }
     return next();
   },
@@ -157,7 +108,7 @@ const Authorization = {
     if (req.decoded.isSuperAdmin || req.decoded.isAdmin) {
       return next();
     }
-    return handleResponse.response(res, 403, 'Not authorized, only admins allowed');
+    return HandleResponse.getResponse(res, 403, 'Not authorized, only admins allowed');
   },
 };
 

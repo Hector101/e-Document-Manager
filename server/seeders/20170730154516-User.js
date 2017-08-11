@@ -11,7 +11,7 @@ module.exports = {
       username: 'superadmin',
       email: 'superadmin@gmail.com',
       password: hashPassword('123456'),
-      blocked: false,
+      isBlocked: false,
       roleId: 1,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -21,7 +21,7 @@ module.exports = {
       username: 'johndoe',
       email: 'johndoe@gmail.com',
       password: hashPassword('123456'),
-      blocked: true,
+      isBlocked: true,
       roleId: 3,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -31,7 +31,7 @@ module.exports = {
       username: 'janedoe',
       email: 'janedoe@gmail.com',
       password: hashPassword('123456'),
-      blocked: false,
+      isBlocked: false,
       roleId: 2,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -41,7 +41,7 @@ module.exports = {
       username: 'nancykate17',
       email: 'nancykate17@gmail.com',
       password: hashPassword('123456'),
-      blocked: false,
+      isBlocked: false,
       roleId: 3,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -52,7 +52,7 @@ module.exports = {
       username: 'mikeolean',
       email: 'mikeolean@gmail.com',
       password: hashPassword('123456'),
-      blocked: false,
+      isBlocked: false,
       roleId: 2,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -63,7 +63,7 @@ module.exports = {
       username: 'lesterfox',
       email: 'lesterfox@gmail.com',
       password: hashPassword('123456'),
-      blocked: false,
+      isBlocked: false,
       roleId: 3,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -74,7 +74,7 @@ module.exports = {
       username: 'kingsags',
       email: 'kingsags@gmail.com',
       password: hashPassword('123456'),
-      blocked: false,
+      isBlocked: false,
       roleId: 3,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -85,7 +85,7 @@ module.exports = {
       username: 'zealstyles',
       email: 'zealstyles@gmail.com',
       password: hashPassword('123456'),
-      blocked: false,
+      isBlocked: false,
       roleId: 3,
       createdAt: new Date(),
       updatedAt: new Date()

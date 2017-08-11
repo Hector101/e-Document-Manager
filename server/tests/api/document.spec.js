@@ -6,7 +6,7 @@ import fakeUsers from '../__mock__/fakeUsers';
 import server from '../../server';
 
 const { superAdminLoginDetail, adminLoginDetail, anotherRegularUserDetail } = fakeUsers;
-const { privateDocument, roleDocument, invalidFieldDocument } = fakeDocuments;
+const { privateDocument, roleDocument, invalidFieldDocument, existingDocument } = fakeDocuments;
 let superAdminToken, adminToken, regularUserToken;
 
 chai.use(chaiHttp);
@@ -72,31 +72,57 @@ describe('Documents', () => {
       .send(invalidFieldDocument)
       .end((err, res) => {
         expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Document not created, check Input');
+        expect(res.body.message).toEqual('Invalid access type provided');
+        done();
+      });
+    });
+
+    it('should respond with the message "Document Title already exist" if document title already exist', (done) => {
+      chai.request(server)
+      .post('/api/v1/documents')
+      .set({ authorization: regularUserToken })
+      .send(existingDocument)
+      .end((err, res) => {
+        expect(res.status).toBe(401);
+        expect(res.body.message).toEqual('Document Title already exist');
         done();
       });
     });
   });
 
   describe('GET /api/v1/documents', () => {
-    it('should not authorize a non admins to get all documents with 403 ststus code', (done) => {
+    it('should get public documents', (done) => {
       chai.request(server)
       .get('/api/v1/documents')
       .set({ authorization: regularUserToken })
       .end((err, res) => {
-        expect(res.status).toBe(403);
-        expect(res.body.message).toEqual('Not authorized, only admins allowed');
+        expect(res.status).toBe(200);
+        expect(res.body.documents[0].title).toEqual('What is a lord in England?');
+        expect(res.body.documents[0].access).toEqual('public');
         done();
       });
     });
 
-    it('should get all documents in database with status 200', (done) => {
+    it('should respond with all documents including private documents for a superadmin', (done) => {
       chai.request(server)
       .get('/api/v1/documents')
       .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(Array.isArray(res.body.pagination.row)).toBe(true);
+        expect(Array.isArray(res.body.documents)).toBe(true);
+        expect(res.body.documents[3].title).toEqual('Just in the creep');
+        expect(res.body.documents[3].access).toEqual('private');
+        done();
+      });
+    });
+
+    it('should respond with 404 if a document search result is not found', (done) => {
+      chai.request(server)
+      .get('/api/v1/documents/?q=genetic')
+      .set({ authorization: superAdminToken })
+      .end((err, res) => {
+        expect(res.status).toBe(404);
+        expect(res.body.message).toEqual('No search result');
         done();
       });
     });
@@ -114,16 +140,6 @@ describe('Documents', () => {
       });
     });
 
-    it('should respond with a 403 status code for unauthorized user', (done) => {
-      chai.request(server)
-      .get('/api/v1/documents/3')
-      .set({ authorization: adminToken })
-      .end((err, res) => {
-        expect(res.status).toBe(403);
-        expect(res.body.message).toEqual('Not allowed');
-        done();
-      });
-    });
     it('should return a validation error if invalid id is provided', (done) => {
       chai.request(server)
       .get('/api/v1/documents/eye')
@@ -141,7 +157,7 @@ describe('Documents', () => {
       .set({ authorization: superAdminToken })
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body.document.title).toEqual('My dream date was awesome');
+        expect(res.body.title).toEqual('My dream date was awesome');
         done();
       });
     });
@@ -163,8 +179,8 @@ describe('Documents', () => {
       .get('/api/v1/search/documents/?q=how')
       .set({ authorization: regularUserToken })
       .end((err, res) => {
-        expect(res.body.pagination.row[0].title).toEqual('How to eat an elephant');
-        expect(res.body.pagination.row[1].title).toEqual('How much does it cost to buy a title');
+        expect(res.body.documents[0].title).toEqual('How to eat an elephant');
+        expect(res.body.documents[1].title).toEqual('How much does it cost to buy a title');
         done();
       });
     });
@@ -202,7 +218,7 @@ describe('Documents', () => {
       .send({ title: 'How to stop global warming' })
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body.document.title).toEqual('How to stop global warming');
+        expect(res.body.title).toEqual('How to stop global warming');
         done();
       });
     });
@@ -214,7 +230,7 @@ describe('Documents', () => {
       .send({ title: 'How to stop global warming' })
       .end((err, res) => {
         expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('Invalid input');
+        expect(res.body.message).toEqual('Invalid document id');
         done();
       });
     });
@@ -250,6 +266,17 @@ describe('Documents', () => {
       .end((err, res) => {
         expect(res.status).toBe(200);
         expect(res.body.message).toEqual('Document deleted successfully');
+        done();
+      });
+    });
+
+    it('should respond with 403 status and a message "Invalid document id" when invalid id is provided', (done) => {
+      chai.request(server)
+      .delete('/api/v1/documents/hd')
+      .set({ authorization: regularUserToken })
+      .end((err, res) => {
+        expect(res.status).toBe(400);
+        expect(res.body.message).toEqual('Invalid document id');
         done();
       });
     });

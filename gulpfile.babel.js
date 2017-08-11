@@ -25,7 +25,7 @@ gulp.task('start', ['build'], shell.task([
 ]));
 
 gulp.task('cleardb', shell.task([
-  'cross-env NODE_ENV=test sequelize db:migrate:undo:all',
+  'NODE_ENV=test sequelize db:migrate:undo:all',
 ]));
 
 gulp.task('migrate', ['cleardb'], shell.task([
