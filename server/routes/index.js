@@ -1,10 +1,10 @@
 
-import users from './users';
-import documents from './documents';
-import roles from './roles';
+import Users from './Users';
+import Documents from './Documents';
+import Roles from './Roles';
 
 export default (router) => {
-  users(router);
-  documents(router);
-  roles(router);
+  Users(router);
+  Documents(router);
+  Roles(router);
 };
