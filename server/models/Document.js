@@ -10,29 +10,34 @@ module.exports = (sequelize, DataTypes) => {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: { args: true, msg: 'Document title already exist' },
       validate: {
-        notEmpty: { args: true, msg: 'Document title should not be empty' },
-        len: { args: [10, 70], msg: 'Title should be at least 10 characters and at most 70' }
+        notEmpty: { args: true, msg: 'Document title Required' },
+        len: { args: [5, 200], msg: 'title too short or too long' }
       }
     },
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
-        notEmpty: { args: true, msg: 'Document content should not be empty' }
+        notEmpty: { args: true, msg: 'Document content Required' },
+        len: { args: [20], msg: 'content too short' }
       },
     },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      validate: {
+        notEmpty: { args: true, msg: 'user id required' }
+      }
     },
     access: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'public',
       validate: {
-        isIn: [['role', 'private', 'public']],
+        notEmpty: { args: true, msg: 'Document access type required' },
+        isIn: { args: [['role', 'private', 'public']], msg: 'Invalid access type provided' },
       }
     }
   });

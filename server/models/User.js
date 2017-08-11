@@ -11,51 +11,64 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: { args: true, msg: 'First name should not be empty' },
-        isAlpha: { args: true, msg: 'First name should be an alphabets' }
+        notEmpty: { args: true, msg: 'First Name Required' },
+        isAlpha: { args: true, msg: 'First Name Is Invalid' },
+        len: { args: [2, 40], msg: 'First name too short or too long' }
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: { args: true, msg: 'Last name should not be empty' },
-        isAlpha: { args: true, msg: 'Last name should be alphabets' }
+        notEmpty: { args: true, msg: 'Last Name Required' },
+        isAlpha: { args: true, msg: 'Last Name Is Invalid' },
+        len: { args: [2, 40], msg: 'Last name too short or too long' }
       }
     },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: {
+        args: true,
+        msg: 'User already exist, choose a different username'
+      },
       validate: {
-        notEmpty: { args: true, msg: 'username name should not be empty' },
-        isAlphanumeric: { args: true, msg: 'First name must not be empty' }
+        notEmpty: { args: true, msg: 'Username Required' },
+        isAlphanumeric: { args: true, msg: 'Username not valid' },
+        len: { args: [2, 40], msg: 'username too short or too long' }
       }
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: {
+        args: true,
+        msg: 'User already exist, choose a diffrent email'
+      },
       validate: {
-        isEmail: { args: true, msg: 'email address entered not valid' }
+        notEmpty: { args: true, msg: 'Email Required' },
+        isEmail: { args: true, msg: 'Email Required' }
       }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: { args: true, msg: 'Password must not be empty' },
-        min: { args: 6, msg: 'Password should be at least 6 characters' }
+        notEmpty: { args: true, msg: 'Password Required' },
       }
     },
-    blocked: {
+    isBlocked: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
     },
     roleId: {
       type: DataTypes.INTEGER,
-      defaultValue: 3
+      defaultValue: 3,
+      validate: {
+        notEmpty: { args: true, msg: 'Role Required' },
+        isInt: { args: true, msg: 'Role id must be an integer' }
+      }
     }
   });
   User.associate = (models) => {

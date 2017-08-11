@@ -12,8 +12,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: { args: true, msg: 'Role already exist' },
       validate: {
-        notEmpty: { args: true, msg: 'Role should not be empty' },
-        isAlpha: { args: true, msg: 'Only letters accepted' }
+        notEmpty: { args: true, msg: 'Role Required' },
+        isAlpha: { args: true, msg: 'Provide a valid role name' }
       }
     }
   });

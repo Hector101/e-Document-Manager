@@ -13,6 +13,12 @@ const HandleResponse = {
     if (typeof message === 'string' && message) {
       return res.status(status).send({ message });
     }
+    if (err.error) {
+      return res.status(status).send({ message: err.error });
+    }
+    if (err.errors[0].message === '') {
+      return res.status(status).send({ message: 'Provide all required fields' });
+    }
     return res.status(status).send({ message: err.errors[0].message });
   },
 
@@ -23,7 +29,7 @@ const HandleResponse = {
    * @param {Object} message - response message
    * @returns {Object} server response payload
    */
-  response(res, status, message) {
+  getResponse(res, status, message) {
     if (typeof message === 'string' && message) {
       return res.status(status).send({ message });
     } else if (Array.isArray(message)) {

@@ -23,7 +23,7 @@ describe('User model', () => {
       models.Document.create(roleDocument)
       .then()
       .catch((err) => {
-        expect(err.errors[0].message).toEqual('title must be unique');
+        expect(err.errors[0].message).toEqual('Document title already exist');
         done();
       });
     });
@@ -32,7 +32,7 @@ describe('User model', () => {
       models.Document.create(invalidFieldDocument)
       .then()
       .catch((err) => {
-        expect(err.errors[0].message).toEqual('Validation isIn on access failed');
+        expect(err.errors[0].message).toEqual('Invalid access type provided');
 
         done();
       });
