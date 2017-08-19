@@ -11,6 +11,16 @@ const DocumentsController = {
    * @returns {Object} - craeted document or server error response
    */
   create(req, res) {
+    const field = ['title', 'content', 'access'].find(
+      element => !req.body[element]
+    );
+    if (field) {
+      return HandleResponse.getResponse(
+        res,
+        400,
+        `${field.charAt(0).toUpperCase()}${field.slice(1)} Required`
+      );
+    }
     return models.Document
       .findOrCreate({
         where: {
@@ -27,11 +37,11 @@ const DocumentsController = {
         if (!created) {
           return HandleResponse.getResponse(
             res,
-            401,
-            'Document Title already exist'
+            409,
+            'A document with this title already exist'
           );
         }
-        HandleResponse.getResponse(res, 201, { document });
+        HandleResponse.getResponse(res, 201, document);
       })
       .catch(err => HandleResponse.handleError(err, 400, res));
   },
@@ -97,7 +107,9 @@ const DocumentsController = {
         ]
       })
       .then((documents) => {
-        if (documents.rows.length === 0) { return HandleResponse.getResponse(res, 404, 'No search result'); }
+        if (documents.rows.length === 0) {
+          return HandleResponse.getResponse(res, 404, 'No search result');
+        }
         return HandleResponse.getResponse(res, 200, {
           documents: documents.rows.map(document =>
             FilterDetails.scrapeDocument(document)
@@ -105,7 +117,9 @@ const DocumentsController = {
           paginationDetail: pagination(documents.count, limit, offset)
         });
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -168,9 +182,6 @@ const DocumentsController = {
  * @returns {Object} - updated document or server error response
  */
   updateDocument(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid document id');
-    }
     const userId = req.decoded.id;
     return models.Document
       .findById(req.params.id)
@@ -196,7 +207,9 @@ const DocumentsController = {
           )
           .catch(err => HandleResponse.handleError(err, 400, res));
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -206,9 +219,6 @@ const DocumentsController = {
    * @returns {Object} - server response payload
    */
   deleteDocument(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid document id');
-    }
     const userId = req.decoded.id;
     return models.Document
       .findById(req.params.id)
@@ -241,7 +251,9 @@ const DocumentsController = {
             )
           );
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   }
 };
 

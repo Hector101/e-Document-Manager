@@ -12,18 +12,26 @@ const UsersController = {
    * @returns {Object} - created user object
    */
   create(req, res) {
+    const field = [
+      'firstName',
+      'lastName',
+      'username',
+      'email',
+      'password'
+    ].find(element => !req.body[element]);
+    if (field) {
+      return HandleResponse.getResponse(
+        res,
+        400,
+        `${field.charAt(0).toUpperCase()}${field.slice(1)} Required`
+      );
+    }
     const userDetails = FilterDetails.scrapeUserDetail(req.body);
-    if (!req.body.password) {
-      return HandleResponse.getResponse(res, 400, 'Password Required');
-    }
-    if (!isNaN(Number(req.body.username))) {
-      return HandleResponse.getResponse(res, 400, 'Username not valid');
-    }
     const hashedPassword = Authorization.encryptPassword(req.body.password);
     return models.User
       .findOrCreate({
         where: {
-          $or: [{ username: req.body.lastName }, { email: req.body.email }]
+          $or: [{ username: req.body.username }, { email: req.body.email }]
         },
         defaults: {
           firstName: req.body.firstName,
@@ -35,7 +43,7 @@ const UsersController = {
       })
       .spread((user, created) => {
         if (!created) {
-          return HandleResponse.getResponse(res, 401, 'User already exist');
+          return HandleResponse.getResponse(res, 409, 'User already exist');
         }
         const token = Authorization.generateToken({
           id: user.id,
@@ -43,9 +51,11 @@ const UsersController = {
           roleId: user.roleId
         });
         userDetails.id = user.id;
-        userDetails.token = token;
 
-        return HandleResponse.getResponse(res, 201, userDetails);
+        return HandleResponse.getResponse(res, 201, {
+          user: userDetails,
+          token
+        });
       })
       .catch(err => HandleResponse.handleError(err, 400, res));
   },
@@ -57,12 +67,11 @@ const UsersController = {
    * @returns {Object} - user details
   */
   login(req, res) {
+    if (!req.body.password) {
+      return HandleResponse.getResponse(res, 401, 'Password Required');
+    }
     if (!(req.body.email || req.body.username)) {
-      return HandleResponse.getResponse(
-        res,
-        401,
-        'Provide either username or password'
-      );
+      return HandleResponse.getResponse(res, 401, 'Username or Email Required');
     }
     return models.User
       .findOne({
@@ -80,14 +89,14 @@ const UsersController = {
       })
       .then((user) => {
         if (!user) {
-          return HandleResponse.getResponse(
-            res,
-            401,
-            'Incorrect username or email'
-          );
+          return HandleResponse.getResponse(res, 404, 'User does not exist');
         }
         if (user.isBlocked === true) {
-          return HandleResponse.getResponse(res, 403, 'Access denied, blocked');
+          return HandleResponse.getResponse(
+            res,
+            403,
+            "Access denied, you're blocked"
+          );
         }
         if (!Authorization.verifyPassword(req.body.password, user.password)) {
           return HandleResponse.getResponse(res, 401, 'Password incorrect');
@@ -99,10 +108,14 @@ const UsersController = {
           roleId: user.roleId
         });
         userDetailsLogin.id = user.id;
-        userDetailsLogin.token = token;
-        return HandleResponse.getResponse(res, 200, userDetailsLogin);
+        return HandleResponse.getResponse(res, 200, {
+          user: userDetailsLogin,
+          token
+        });
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -134,7 +147,9 @@ const UsersController = {
           paginationDetails: pagination(users.count, limit, offset)
         })
       )
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -144,14 +159,11 @@ const UsersController = {
    * @returns {Object} - user object
    */
   getUser(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid user id');
-    }
     return models.User
       .findById(req.params.id)
       .then((user) => {
         if (!user) {
-          return HandleResponse.getResponse(res, 404, 'User not found');
+          return HandleResponse.getResponse(res, 404, 'User does not exist');
         }
         return HandleResponse.getResponse(
           res,
@@ -159,7 +171,9 @@ const UsersController = {
           FilterDetails.scrapeUserDetail(user)
         );
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -169,47 +183,47 @@ const UsersController = {
    * @returns {Object} - updated user object
    */
   updateUser(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid user id');
-    }
-    if (!isNaN(Number(req.body.username))) {
-      return HandleResponse.getResponse(res, 400, 'Username not valid');
-    }
     if (
       (req.decoded.isAdmin || req.decoded.isSuperAdmin) &&
       req.decoded.id.toString() !== req.params.id
     ) {
-      return models.User.findById(req.params.id).then((user) => {
-        if (req.decoded.isSuperAdmin) {
+      return models.User
+        .findById(req.params.id)
+        .then((user) => {
+          if (!user) {
+            return HandleResponse.getResponse(res, 404, 'User does not exist');
+          }
+          if (req.decoded.isSuperAdmin) {
+            return user
+              .update(req.body, { fields: ['roleId', 'isBlocked'] })
+              .then(updateUser =>
+                HandleResponse.getResponse(
+                  res,
+                  200,
+                  FilterDetails.scrapeUserDetail(updateUser)
+                )
+              )
+              .catch(err => HandleResponse.handleError(err, 400, res));
+          }
+          if (user.roleId === 1) {
+            return HandleResponse.getResponse(
+              res,
+              403,
+              'Not permitted to perform this action'
+            );
+          }
           return user
-            .update(req.body, { fields: ['roleId', 'isBlocked'] })
+            .update(req.body, { fields: ['isBlocked'] })
             .then(updateUser =>
               HandleResponse.getResponse(
                 res,
                 200,
                 FilterDetails.scrapeUserDetail(updateUser)
-              ))
-            .catch(err => HandleResponse.handleError(err, 400, res));
-        }
-        if (user.roleId === 1) {
-          return HandleResponse.getResponse(
-            res,
-            403,
-            'Not permitted to perform this action'
-          );
-        }
-        return user
-          .update(req.body, { fields: ['isBlocked'] })
-          .then(updateUser =>
-            HandleResponse.getResponse(
-              res,
-              200,
-              FilterDetails.scrapeUserDetail(updateUser)
+              )
             )
-          )
-          .catch(err => HandleResponse.handleError(err, 400, res));
-      })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+            .catch(err => HandleResponse.handleError(err, 400, res));
+        })
+        .catch(err => HandleResponse.handleError(err, 500, res));
     }
     return req.user
       .update(req.body, {
@@ -222,7 +236,9 @@ const UsersController = {
           FilterDetails.scrapeUserDetail(updateUser)
         )
       )
-      .catch(err => HandleResponse.handleError(err, 400, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -232,10 +248,6 @@ const UsersController = {
    * @returns {Object} - user document object
    */
   getUserDocuments(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid user id');
-    }
-
     const userId = req.decoded.id;
     const roleId = req.decoded.roleId;
     const limit = req.query.limit || 20;
@@ -295,7 +307,9 @@ const UsersController = {
           paginationDetail: pagination(documents.count, limit, offset)
         });
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -350,7 +364,7 @@ const UsersController = {
         });
       })
       .catch(err =>
-        HandleResponse.handleError(err, 500, res)
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
       );
   },
 
@@ -361,19 +375,20 @@ const UsersController = {
    * @returns {Object} - delete response message object
    */
   deleteUser(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid user id');
-    }
     return models.User
       .findById(req.params.id, {
         include: [{ model: models.Role, attributes: ['name'] }]
       })
       .then((user) => {
         if (!user) {
-          return HandleResponse.getResponse(res, 404, 'User not found');
+          return HandleResponse.getResponse(res, 404, 'User does not exist');
         }
         if (user.Role.name === 'superadmin') {
-          return HandleResponse.getResponse(res, 403, 'Not allowed to remove superadmin');
+          return HandleResponse.getResponse(
+            res,
+            403,
+            'Not allowed to remove superadmin'
+          );
         }
         return user
           .destroy()
@@ -384,7 +399,9 @@ const UsersController = {
             HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
           );
       })
-      .catch(err => HandleResponse.handleError(err, 400, res, 'Invalid input'));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
   /**
   * Logout a user

@@ -1,4 +1,3 @@
-
 /**
  * @description define Document database model
  * @param {Object} sequelize - sequelize object
@@ -22,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         notEmpty: { args: true, msg: 'Document content Required' },
         len: { args: [20], msg: 'content too short' }
-      },
+      }
     },
     userId: {
       type: DataTypes.INTEGER,
@@ -37,7 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'public',
       validate: {
         notEmpty: { args: true, msg: 'Document access type required' },
-        isIn: { args: [['role', 'private', 'public']], msg: 'Invalid access type provided' },
+        isIn: {
+          args: [['role', 'private', 'public']],
+          msg: 'Invalid access type provided'
+        }
       }
     }
   });
@@ -45,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
   Document.associate = (models) => {
     Document.belongsTo(models.User, {
       foreignKey: 'userId',
-      onDelete: 'SET NULL',
+      onDelete: 'SET NULL'
     });
   };
   return Document;

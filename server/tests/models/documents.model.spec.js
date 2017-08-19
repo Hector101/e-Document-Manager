@@ -4,23 +4,23 @@ import models from '../../models';
 import fakeDocuments from '../__mock__/fakeDocuments';
 
 
-const { roleDocument, invalidFieldDocument } = fakeDocuments;
+const { newDocument, invalidFieldDocument } = fakeDocuments;
 
-describe('User model', () => {
+describe('Document model', () => {
   describe('#Document.create', () => {
-    it('should create a user document', (done) => {
-      models.Document.create(roleDocument)
+    it('should create a user document when all required documents fields is provided and valid', (done) => {
+      models.Document.create(newDocument)
       .then((user) => {
-        expect(user.dataValues.title).toEqual(roleDocument.title);
-        expect(user.dataValues.content).toEqual(roleDocument.content);
-        expect(user.dataValues.access).toEqual(roleDocument.access);
+        expect(user.dataValues.title).toEqual(newDocument.title);
+        expect(user.dataValues.content).toEqual(newDocument.content);
+        expect(user.dataValues.access).toEqual(newDocument.access);
         done();
       })
       .catch();
     });
 
     it('should throw error if document title already exist', (done) => {
-      models.Document.create(roleDocument)
+      models.Document.create(newDocument)
       .then()
       .catch((err) => {
         expect(err.errors[0].message).toEqual('Document title already exist');
@@ -40,7 +40,7 @@ describe('User model', () => {
   });
 
   describe('#Document.update', () => {
-    it('should update a user document by user id', (done) => {
+    it('should update a user document by owner of document', (done) => {
       models.Document.findById('16')
         .then((document) => {
           document.update({ title: 'React ecosystem is a mess' })
@@ -54,7 +54,7 @@ describe('User model', () => {
   });
 
   describe('#Documents.destroy', () => {
-    it('should delete a user document by user id', (done) => {
+    it('should delete a user document, when document id belongs to a user', (done) => {
       models.Document.findById('6')
         .then((document) => {
           document.destroy()

@@ -8,7 +8,7 @@ const { newUser, invalidUser } = fakeUsers;
 
 describe('User model', () => {
   describe('#User.create', () => {
-    it('should create a user', (done) => {
+    it('should create a user, when all required fields are provided and valid', (done) => {
       models.User.create(newUser)
       .then((user) => {
         expect(user.dataValues.email).toEqual(newUser.email);
@@ -18,7 +18,8 @@ describe('User model', () => {
       .catch();
     });
 
-    it('should throw error if user already exist', (done) => {
+    it(`should throw error if user already exist with response message 
+      "User already exist, choose a different username"`, (done) => {
       models.User.create(newUser)
       .then()
       .catch((err) => {
@@ -28,7 +29,9 @@ describe('User model', () => {
       });
     });
 
-    it('should throw error if invalid username is provided', (done) => {
+    it(`when creating a user account, 
+      if all fields is not provided, 
+        expect an error message pointing to the missing field`, (done) => {
       models.User.create(invalidUser)
       .then()
       .catch((err) => {
@@ -39,7 +42,7 @@ describe('User model', () => {
   });
 
   describe('#User.update', () => {
-    it('should update a user by user id', (done) => {
+    it('when a user is authenticated and wants to update their firstNAme, expect new first name to be "Ademola"', (done) => {
       models.User.findById('4')
         .then((user) => {
           user.update({ firstName: 'Ademola' })
@@ -52,8 +55,8 @@ describe('User model', () => {
   });
 
   describe('#User.destroy', () => {
-    it('should delete a user by user id', (done) => {
-      models.User.findById('4')
+    it('should delete a user by user id when authenticated as a super admin', (done) => {
+      models.User.findById('10')
         .then((user) => {
           user.destroy()
             .then((userUpdate) => {

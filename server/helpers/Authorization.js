@@ -5,13 +5,11 @@ import secret from './getSecret';
 import models from '../models';
 import HandleResponse from '../helpers/HandleResponse';
 
-
 /**
  * @description define all authentication related methods
  * @exports Authorization
  */
 const Authorization = {
-
   /**
    * generate jwt token
    * @param {Object} user - user details
@@ -19,7 +17,7 @@ const Authorization = {
    */
   generateToken(user) {
     return jwt.sign(user, secret, {
-      expiresIn: milliSeconds('7 days'),
+      expiresIn: milliSeconds('7 days')
     });
   },
 
@@ -55,18 +53,35 @@ const Authorization = {
     if (token) {
       jwt.verify(token, secret, (err, decoded) => {
         if (err) {
-          return HandleResponse.getResponse(res, 401, 'Authentication failed, invalid token');
+          return HandleResponse.getResponse(
+            res,
+            401,
+            'Authentication failed, invalid token'
+          );
         }
 
-        models.User.findOne({
-          include: [{ model: models.Role, attributes: ['name'] }],
-          where: {
-            username: decoded.username
-          }
-        })
+        models.User
+          .findOne({
+            include: [{ model: models.Role, attributes: ['name'] }],
+            where: {
+              username: decoded.username
+            }
+          })
           .then((user) => {
-            if (!user) return HandleResponse.getResponse(res, 401, 'Account does not exist');
-            if (user.isBlocked === true) return HandleResponse.getResponse(res, 403, 'Access denied, you\'re blocked');
+            if (!user) {
+              return HandleResponse.getResponse(
+                res,
+                401,
+                'Account does not exist'
+              );
+            }
+            if (user.isBlocked === true) {
+              return HandleResponse.getResponse(
+                res,
+                403,
+                "Access denied, you're blocked"
+              );
+            }
             if (decoded.roleId === 1) {
               decoded.isSuperAdmin = true;
             } else if (decoded.roleId === 2) {
@@ -76,10 +91,15 @@ const Authorization = {
             req.decoded = decoded;
             req.user = user;
             return next();
-          }).catch(err => HandleResponse.getResponse(res, 500, err));
+          })
+          .catch(err => HandleResponse.getResponse(res, 500, err));
       });
     } else {
-      return HandleResponse.getResponse(res, 401, 'Authentication failed, token unavailable');
+      return HandleResponse.getResponse(
+        res,
+        401,
+        'Authentication failed, token unavailable'
+      );
     }
   },
 
@@ -92,7 +112,11 @@ const Authorization = {
    */
   verifySuperAdmin(req, res, next) {
     if (!req.decoded.isSuperAdmin) {
-      return HandleResponse.getResponse(res, 403, 'Not authorized, only super admin allowed');
+      return HandleResponse.getResponse(
+        res,
+        403,
+        'Not authorized, only super admin allowed'
+      );
     }
     return next();
   },
@@ -108,8 +132,40 @@ const Authorization = {
     if (req.decoded.isSuperAdmin || req.decoded.isAdmin) {
       return next();
     }
-    return HandleResponse.getResponse(res, 403, 'Not authorized, only admins allowed');
+    return HandleResponse.getResponse(
+      res,
+      403,
+      'Not authorized, only admins allowed'
+    );
   },
+
+  /**
+   * verify if id provided is an integer
+   * @param {Object} req - request object from client
+   * @param {Object} res - response object
+   * @param {Function} next - next middleware function
+   *  @returns {Object} - server response payload
+   */
+  verifyId(req, res, next) {
+    if (isNaN(Number(req.params.id))) {
+      return HandleResponse.getResponse(res, 400, 'Invalid id');
+    }
+    return next();
+  },
+
+  /**
+   * verify if id provided is an integer
+   * @param {Object} req - request object from client
+   * @param {Object} res - response object
+   * @param {Function} next - next middleware function
+   *  @returns {Object} - server response payload
+   */
+  veryfyUserName(req, res, next) {
+    if (!isNaN(Number(req.body.username))) {
+      return HandleResponse.getResponse(res, 400, 'Username not valid');
+    }
+    return next();
+  }
 };
 
 export default Authorization;

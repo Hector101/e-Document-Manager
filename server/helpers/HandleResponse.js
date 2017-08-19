@@ -1,7 +1,5 @@
-
-
 const HandleResponse = {
-    /**
+  /**
      * handle error response
      * @param {Object} err - error response object from server
      * @param {Object} status - response status code
@@ -14,10 +12,7 @@ const HandleResponse = {
       return res.status(status).send({ message });
     }
     if (err.error) {
-      return res.status(status).send({ message: err.error });
-    }
-    if (err.errors[0].message === '') {
-      return res.status(status).send({ message: 'Provide all required fields' });
+      return res.status(500).send({ message: err.error });
     }
     return res.status(status).send({ message: err.errors[0].message });
   },
@@ -36,7 +31,7 @@ const HandleResponse = {
       return res.status(status).send({ message });
     }
     return res.status(status).send(message);
-  },
+  }
 };
 
 export default HandleResponse;
