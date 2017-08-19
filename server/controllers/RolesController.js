@@ -9,11 +9,31 @@ const RolesController = {
    * @returns {Object} - created role instance
    */
   create(req, res) {
+    const field = ['name'].find(element => !req.body[element]);
+
+    if (field) {
+      return HandleResponse.getResponse(res, 400, 'Role name Required');
+    }
+
     return models.Role
-      .create({
-        name: req.body.name
+      .findOrCreate({
+        where: {
+          name: req.body.name
+        },
+        defaults: {
+          name: req.body.name
+        }
       })
-      .then(role => HandleResponse.getResponse(res, 201, role))
+      .spread((role, created) => {
+        if (!created) {
+          return HandleResponse.getResponse(
+            res,
+            409,
+            'Role name already exist'
+          );
+        }
+        return HandleResponse.getResponse(res, 201, role);
+      })
       .catch(err => HandleResponse.handleError(err, 400, res));
   },
 
@@ -27,7 +47,9 @@ const RolesController = {
     return models.Role
       .findAll()
       .then(role => HandleResponse.getResponse(res, 200, role))
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -37,9 +59,6 @@ const RolesController = {
    * @returns {Object} - instance of role
    */
   getRole(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid role id');
-    }
     return models.Role
       .findById(req.params.id)
       .then((role) => {
@@ -48,7 +67,9 @@ const RolesController = {
         }
         return HandleResponse.getResponse(res, 200, role);
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -58,10 +79,6 @@ const RolesController = {
    * @returns {Object} - updated role
    */
   updateRole(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid role id');
-    }
-
     if (req.params.id === '1') {
       return HandleResponse.getResponse(
         res,
@@ -72,13 +89,17 @@ const RolesController = {
     return models.Role
       .findById(req.params.id)
       .then((role) => {
-        if (!role) { return HandleResponse.getResponse(res, 404, 'Role not found'); }
+        if (!role) {
+          return HandleResponse.getResponse(res, 404, 'Role not found');
+        }
         return role
           .update({ name: req.body.name })
           .then(() => HandleResponse.getResponse(res, 200, role))
           .catch(err => HandleResponse.handleError(err, 400, res));
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   },
 
   /**
@@ -88,10 +109,6 @@ const RolesController = {
    * @returns {Object} - server response payload
    */
   deleteRole(req, res) {
-    if (isNaN(Number(req.params.id))) {
-      return HandleResponse.getResponse(res, 400, 'Invalid role id');
-    }
-
     if (req.params.id === '1') {
       return HandleResponse.getResponse(
         res,
@@ -103,7 +120,9 @@ const RolesController = {
     return models.Role
       .findById(req.params.id)
       .then((role) => {
-        if (!role) { return HandleResponse.getResponse(res, 404, 'Role not found'); }
+        if (!role) {
+          return HandleResponse.getResponse(res, 404, 'Role not found');
+        }
         return role
           .destroy()
           .then(() =>
@@ -111,7 +130,9 @@ const RolesController = {
           )
           .catch(err => HandleResponse.handleError(err, 400, res));
       })
-      .catch(err => HandleResponse.handleError(err, 500, res));
+      .catch(err =>
+        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+      );
   }
 };
 

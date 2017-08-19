@@ -8,15 +8,50 @@ import Authorization from '../helpers/Authorization';
  */
 export default (router) => {
   router.post('/api/v1/users/login', UsersController.login);
-  router.post('/api/v1/users', UsersController.create);
+  router.post(
+    '/api/v1/users',
+    Authorization.veryfyUserName,
+    UsersController.create
+  );
   router.get('/api/v1/users/logout', UsersController.logout);
 
-  router.get('/api/v1/users', Authorization.verifyUser, Authorization.verifySuperAndAdmin, UsersController.getUsers);
-  router.get('/api/v1/users/:id', Authorization.verifyUser, UsersController.getUser);
-  router.get('/api/v1/users/:id/documents', Authorization.verifyUser, UsersController.getUserDocuments);
-  router.get('/api/v1/search/users', Authorization.verifyUser, UsersController.searchUser);
+  router.get(
+    '/api/v1/users',
+    Authorization.verifyUser,
+    Authorization.verifySuperAndAdmin,
+    UsersController.getUsers
+  );
+  router.get(
+    '/api/v1/users/:id',
+    Authorization.verifyUser,
+    Authorization.verifyId,
+    UsersController.getUser
+  );
+  router.get(
+    '/api/v1/users/:id/documents',
+    Authorization.verifyUser,
+    Authorization.verifyId,
+    UsersController.getUserDocuments
+  );
+  router.get(
+    '/api/v1/search/users',
+    Authorization.verifyUser,
+    UsersController.searchUser
+  );
 
-  router.put('/api/v1/users/:id', Authorization.verifyUser, UsersController.updateUser);
+  router.put(
+    '/api/v1/users/:id',
+    Authorization.verifyUser,
+    Authorization.verifyId,
+    Authorization.veryfyUserName,
+    UsersController.updateUser
+  );
 
-  router.delete('/api/v1/users/:id', Authorization.verifyUser, Authorization.verifySuperAdmin, UsersController.deleteUser);
+  router.delete(
+    '/api/v1/users/:id',
+    Authorization.verifyUser,
+    Authorization.verifySuperAdmin,
+    Authorization.verifyId,
+    UsersController.deleteUser
+  );
 };
