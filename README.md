@@ -56,12 +56,26 @@ However ensure to follow the AirBnB coding style guide.
 This app and its functions are limited by time constraint and is in no way at its best.
 
 ### FAQ
-+ Can I fork this repository?
-  + Yes you can.
-+ Can I contribute to the project?
-  + Yes you can, however it is advised you follow the AirBnB style guide for your PR to be considered being merged to the project
-+ Can I modify the project, for usage?
-  + This project is an open source project, so you can.
++ What is the mode of authentication of this app?
+   + It uses the traditional username/email and password to authenticate users.
++ Does this app use session base authorization or jwt authorization?
+  + This app uses a jwt token for authorization.
++ What are the access types documents has?
+   + The access types include private, public or role.
++ What is the essence of having "role" as a the access type of a document?
+  + I allows users within the same role to gain access to the document.
++ Can a user that is not authenticated gain assess to viewing documents?
+   + No, only authenticated users can view documents.
++ Can a user view other people's private documents?
+    + No, only a super admin and the owner of the document can view the document.
++ Can I view other users details?
+  + Yes, but not their sensitive details like password.
++ What are the fields required to create a documents?
+   + title, content, and access
++ Which of the roles has unlimited access to all resources and can perform any operation?
+  + The super admin, except deleting any users' documents.
++ Can I search for documents?
+    + Yes, but only users' own document, public and documents in same user role access.
 
 ## Authors
 Johnson Okoro
