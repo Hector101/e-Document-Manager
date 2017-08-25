@@ -12,11 +12,7 @@ export default {
       firstName: requestBody.firstName,
       lastName: requestBody.lastName,
       username: requestBody.username,
-      email: requestBody.email,
-      isBlocked: requestBody.isBlocked,
-      roleId: requestBody.roleId,
       createdAt: requestBody.createdAt,
-      updatedAt: requestBody.updatedAt
     };
   },
     /**
@@ -29,8 +25,6 @@ export default {
       id: requestBody.id,
       title: requestBody.title,
       content: requestBody.content,
-      access: requestBody.access,
-      userId: requestBody.userId,
       createdAt: requestBody.createdAt,
       updatedAt: requestBody.updatedAt
     };

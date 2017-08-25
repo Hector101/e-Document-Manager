@@ -11,9 +11,7 @@ const DocumentsController = {
    * @returns {Object} - craeted document or server error response
    */
   create(req, res) {
-    const field = ['title', 'content', 'access'].find(
-      element => !req.body[element]
-    );
+    const field = ['title', 'content'].find(element => !req.body[element]);
     if (field) {
       return HandleResponse.getResponse(
         res,
@@ -29,7 +27,7 @@ const DocumentsController = {
         defaults: {
           title: req.body.title,
           content: req.body.content,
-          access: req.body.access,
+          access: req.body.access || 'public',
           userId: req.decoded.id
         }
       })
@@ -41,7 +39,11 @@ const DocumentsController = {
             'A document with this title already exist'
           );
         }
-        HandleResponse.getResponse(res, 201, document);
+        return HandleResponse.getResponse(
+          res,
+          201,
+          FilterDetails.scrapeDocument(document)
+        );
       })
       .catch(err => HandleResponse.handleError(err, 400, res));
   },
@@ -60,8 +62,7 @@ const DocumentsController = {
     if (req.query.q) {
       searchKey = `%${req.query.q}%`;
     }
-
-    const searchAttributes = req.decoded.isSuperAdmin
+    const searchAttributes = req.decoded.roleId === 1
       ? {
         title: { $iLike: searchKey }
       }
@@ -93,8 +94,6 @@ const DocumentsController = {
           'id',
           'title',
           'content',
-          'access',
-          'userId',
           'createdAt',
           'updatedAt'
         ],
@@ -114,7 +113,7 @@ const DocumentsController = {
           documents: documents.rows.map(document =>
             FilterDetails.scrapeDocument(document)
           ),
-          paginationDetail: pagination(documents.count, limit, offset)
+          paginationDetails: pagination(documents.count, limit, offset)
         });
       })
       .catch(err =>
@@ -139,7 +138,7 @@ const DocumentsController = {
         }
       ]
     };
-    const searchKey = req.decoded.isSuperAdmin
+    const searchKey = req.decoded.roleId === 1
       ? { id: req.params.id }
       : {
         id: req.params.id,
@@ -162,7 +161,11 @@ const DocumentsController = {
       .findOne(options)
       .then((document) => {
         if (!document) {
-          return HandleResponse.getResponse(res, 404, 'Document not found');
+          return HandleResponse.getResponse(
+            res,
+            404,
+            'No accessible document not found'
+          );
         }
         return HandleResponse.getResponse(
           res,

@@ -14,7 +14,6 @@ const {
   superAdminLoginDetail,
   adminLoginDetail,
   regularUserDetail,
-  anotherRegularUserDetail,
   wrongLoginDetail,
   invalidLoginDetail,
   invalidPassword,
@@ -22,7 +21,7 @@ const {
   invalidUser
 } = fakeUsers;
 
-let superAdminToken, adminToken, regularUserToken;
+let superAdminToken, adminToken;
 
 describe('User', () => {
   before((done) => {
@@ -45,17 +44,6 @@ describe('User', () => {
       done();
     });
   });
-
-  before((done) => {
-    chai
-    .request(server)
-    .post('/api/v1/users/login')
-    .send(anotherRegularUserDetail)
-    .end((err, res) => {
-      regularUserToken = res.body.token;
-      done();
-    });
-  });
   after((done) => {
     models.User.destroy({
       where: { id: { $notIn: [1, 2, 3, 4, 5, 6, 7, 8] } }
@@ -75,7 +63,6 @@ describe('User', () => {
             expect(res.status).toBe(200);
             expect(res.body).toIncludeKeys(['user', 'token']);
             expect(res.body.user.firstName).toEqual('Mighty');
-            expect(res.body.user.email).toEqual('superadmin@gmail.com');
             done();
           });
       });
@@ -161,11 +148,9 @@ describe('User', () => {
             'firstName',
             'lastName',
             'username',
-            'email'
           ]);
           expect(res.body.user.firstName).toEqual('Mary');
           expect(res.body.user.lastName).toEqual('Kay');
-          expect(res.body.user.email).toEqual('marykay@gmail.com');
           expect(res.body.user.username).toEqual('marykay');
           done();
         });
@@ -247,24 +232,6 @@ describe('User', () => {
               expect(res.body.users).toBeAn('array');
               expect(res.body.users[1].firstName).toEqual('John');
               expect(res.body.users[1].lastName).toEqual('Doe');
-              done();
-            });
-        });
-      });
-
-      describe('when a non admin is authenticated', () => {
-        it(`should not authorize to 
-        access all users with a 403 status and "Not authorized, 
-        only admins allowed"`, (done) => {
-          chai
-            .request(server)
-            .get('/api/v1/users')
-            .set({ authorization: regularUserToken })
-            .end((err, res) => {
-              expect(res.status).toBe(403);
-              expect(res.body.message).toEqual(
-                'Not authorized, only admins allowed'
-              );
               done();
             });
         });
@@ -354,22 +321,6 @@ describe('User', () => {
             });
         });
       });
-
-      describe(`when authenticated use
-         is super admin and whats to update
-            other user's role from regular user to admin`, () => {
-        it('should update user roleId - with id "5" to "2"', (done) => {
-          chai
-            .request(server)
-            .put('/api/v1/users/5')
-            .set({ authorization: superAdminToken })
-            .send({ roleId: 2 })
-            .end((err, res) => {
-              expect(res.body.roleId).toEqual(2);
-              done();
-            });
-        });
-      });
       describe(`when authenticated user is an admin,
          and wants to block super admin`, () => {
         it(`should respond with status code 403 and a message
@@ -399,7 +350,6 @@ describe('User', () => {
             .send({ isBlocked: true })
             .end((err, res) => {
               expect(res.status).toEqual(200);
-              expect(res.body.isBlocked).toBe(true);
               done();
             });
         });
@@ -451,7 +401,6 @@ describe('User', () => {
                 'id',
                 'title',
                 'content',
-                'userId',
                 'createdAt',
                 'updatedAt'
               ]);
@@ -520,8 +469,8 @@ describe('User', () => {
             .get('/api/v1/search/users/?q=doe')
             .set({ authorization: adminToken })
             .end((err, res) => {
-              expect(res.body.users[0].email).toEqual('johndoe@gmail.com');
-              expect(res.body.users[1].email).toEqual('janedoe@gmail.com');
+              expect(res.body.users[0].username).toEqual('johndoe');
+              expect(res.body.users[1].username).toEqual('janedoe');
               done();
             });
         });
@@ -538,7 +487,6 @@ describe('User', () => {
             .set({ authorization: adminToken })
             .end((err, res) => {
               expect(res.body.users[0].username).toEqual('nancykate17');
-              expect(res.body.users[0].email).toEqual('nancykate17@gmail.com');
               done();
             });
         });
@@ -597,7 +545,8 @@ describe('User', () => {
 
       describe(`when the authenticated user a 
         super admin, and wants to delete a user from database`, () => {
-        it('expect a 200 status code with a message "User deleted successfully"', (done) => {
+        it(`expect a 200 status code with a message
+           "User deleted successfully"`, (done) => {
           chai
             .request(server)
             .delete('/api/v1/users/8')
@@ -627,7 +576,8 @@ describe('User', () => {
 
     describe(' GET /api/v1/users/logout', () => {
       describe('when a user successfully signs out', () => {
-        it('expect a 200 status and a response message "Logout successful"', (done) => {
+        it(`expect a 200 status and a response
+           message "Logout successful"`, (done) => {
           chai.request(server).get('/api/v1/users/logout').end((err, res) => {
             expect(res.status).toEqual(200);
             expect(res.body.message).toEqual('Logout successful');
@@ -637,7 +587,8 @@ describe('User', () => {
       });
     });
 
-    describe('Handle Server Error when it occurs with each of these operations', () => {
+    describe(`Handle Server Error when it
+     occurs with each of these operations`, () => {
       let stubFindOne;
       let stubFindAndCount;
       let stubFinfById;

@@ -48,6 +48,7 @@ const UsersController = {
         const token = Authorization.generateToken({
           id: user.id,
           username: user.username,
+          email: user.email,
           roleId: user.roleId
         });
         userDetails.id = user.id;
@@ -75,7 +76,6 @@ const UsersController = {
     }
     return models.User
       .findOne({
-        include: [{ model: models.Role, attributes: ['name'] }],
         where: {
           $or: [
             {
@@ -98,6 +98,7 @@ const UsersController = {
             "Access denied, you're blocked"
           );
         }
+
         if (!Authorization.verifyPassword(req.body.password, user.password)) {
           return HandleResponse.getResponse(res, 401, 'Password incorrect');
         }
@@ -105,6 +106,7 @@ const UsersController = {
         const token = Authorization.generateToken({
           id: user.id,
           username: user.username,
+          email: user.email,
           roleId: user.roleId
         });
         userDetailsLogin.id = user.id;
@@ -135,10 +137,7 @@ const UsersController = {
           'id',
           'firstName',
           'lastName',
-          'username',
-          'email',
-          'isBlocked',
-          'roleId'
+          'username'
         ]
       })
       .then(users =>
@@ -184,7 +183,7 @@ const UsersController = {
    */
   updateUser(req, res) {
     if (
-      (req.decoded.isAdmin || req.decoded.isSuperAdmin) &&
+      (req.decoded.roleId === 2 || req.decoded.roleId === 1) &&
       req.decoded.id.toString() !== req.params.id
     ) {
       return models.User
@@ -193,7 +192,7 @@ const UsersController = {
           if (!user) {
             return HandleResponse.getResponse(res, 404, 'User does not exist');
           }
-          if (req.decoded.isSuperAdmin) {
+          if (req.decoded.roleId === 1) {
             return user
               .update(req.body, { fields: ['roleId', 'isBlocked'] })
               .then(updateUser =>
@@ -225,20 +224,31 @@ const UsersController = {
         })
         .catch(err => HandleResponse.handleError(err, 500, res));
     }
-    return req.user
-      .update(req.body, {
-        fields: ['firstName', 'lastName', 'username', 'email', 'password']
-      })
-      .then(updateUser =>
-        HandleResponse.getResponse(
-          res,
-          200,
-          FilterDetails.scrapeUserDetail(updateUser)
+    if (req.user.id.toString() === req.params.id) {
+      if (req.body.password) {
+        const hashedPassword = Authorization.encryptPassword(req.body.password);
+        req.body.password = hashedPassword;
+      }
+      return req.user
+        .update(req.body, {
+          fields: ['firstName', 'lastName', 'email', 'password']
+        })
+        .then(updateUser =>
+          HandleResponse.getResponse(
+            res,
+            200,
+            FilterDetails.scrapeUserDetail(updateUser)
+          )
         )
-      )
-      .catch(err =>
-        HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
-      );
+        .catch(err =>
+          HandleResponse.handleError(err, 500, res, 'Server Error Occurred')
+        );
+    }
+    return HandleResponse.getResponse(
+      res,
+      404,
+      "You don't have permission to edit this profile"
+    );
   },
 
   /**
@@ -261,7 +271,6 @@ const UsersController = {
         'title',
         'content',
         'access',
-        'userId',
         'createdAt',
         'updatedAt'
       ],
@@ -273,7 +282,7 @@ const UsersController = {
       ]
     };
 
-    const searchKey = req.decoded.isSuperAdmin
+    const searchKey = req.decoded.roleId === 1
       ? { userId: req.params.id }
       : {
         userId: req.params.id,
@@ -304,7 +313,7 @@ const UsersController = {
           documents: documents.rows.map(document =>
             FilterDetails.scrapeDocument(document)
           ),
-          paginationDetail: pagination(documents.count, limit, offset)
+          paginationDetails: pagination(documents.count, limit, offset)
         });
       })
       .catch(err =>
@@ -321,13 +330,12 @@ const UsersController = {
   searchUser(req, res) {
     const limit = req.query.limit || 20;
     const offset = req.query.offset || 0;
-    const searchKey = req.query.q;
+    const searchKey = `%${req.query.q}%`;
     models.User
       .findAndCount({
         offset,
         limit,
-        attributes: ['firstName', 'lastName', 'username', 'email'],
-        include: [{ model: models.Role, attributes: ['name'] }],
+        attributes: ['firstName', 'lastName', 'username', 'createdAt'],
         where: {
           $or: [
             {
@@ -360,7 +368,7 @@ const UsersController = {
         const paginationDetails = pagination(users.count, limit, offset);
         return HandleResponse.getResponse(res, 200, {
           users: users.rows,
-          pagination: paginationDetails
+          paginationDetails
         });
       })
       .catch(err =>
