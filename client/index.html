@@ -242,10 +242,10 @@
                     <a href="#get-all-users" class="toc-h2 toc-link" data-title="Users">Get All Users</a>
                   </li>
                   <li>
-                    <a href="#create-user" class="toc-h2 toc-link" data-title="Users">Create User</a>
+                    <a href="#create-a-user" class="toc-h2 toc-link" data-title="Users">Create a User</a>
                   </li>
                   <li>
-                    <a href="#get-user" class="toc-h2 toc-link" data-title="Users">Get User</a>
+                    <a href="#get-a-user" class="toc-h2 toc-link" data-title="Users">Get a User</a>
                   </li>
                   <li>
                     <a href="#update-user" class="toc-h2 toc-link" data-title="Users">Update User</a>
@@ -439,95 +439,34 @@
 <blockquote>
 <p>Sample JSON structured response:</p>
 </blockquote>
-<pre class="highlight javascript tab-javascript"><code>    <span class="s2">"users"</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Mighty"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Joe"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"superadmin"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"superadmin@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">1</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"johndoe"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"johndoe@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">3</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Jane"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"janedoe"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"janedoe@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">2</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Nancy"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Kate"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"nancykate17"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"nancykate17@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">3</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Lester"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Fox"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"lesterfox"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"lesterfox@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">3</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Kings"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Okezie"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"kingsags"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"kingsags@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">3</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Zeal"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Styles"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"zealstyles"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"zealstyles@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">3</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"hanna"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"may"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"hannamay"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"hannamay@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">3</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Mike"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Olean"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"mikeolean"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"mikeolean@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">2</span>
-      <span class="p">}</span>
-  <span class="p">],</span>
-  <span class="s2">"paginationDetails"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">"page"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">"pageCount"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">"pageSize"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
-    <span class="s2">"totalCount"</span><span class="p">:</span> <span class="mi">9</span>
-  <span class="p">}</span>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+    <span class="s2">"users"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">,</span>
+            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
+            <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"johndoe"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Nancy"</span><span class="p">,</span>
+            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Kate"</span><span class="p">,</span>
+            <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"nancykate17"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Mike"</span><span class="p">,</span>
+            <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Olean"</span><span class="p">,</span>
+            <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"mikeolean"</span>
+        <span class="p">},</span>
+
+    <span class="p">],</span>
+    <span class="s2">"paginationDetails"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"page"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"pageCount"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"pageSize"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">"totalCount"</span><span class="p">:</span> <span class="mi">3</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre><h3 id='request'>Request</h3>
 <ul>
@@ -558,15 +497,15 @@
 <li>Status: <code>200: OK</code></li>
 <li>Body <code>(application/json)</code></li>
 </ul>
-<h2 id='create-user'>Create User</h2>
+<h2 id='create-a-user'>Create a User</h2>
 <blockquote>
 <p>Request:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-  <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Hanna"</span><span class="p">,</span>
-  <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Abraham"</span><span class="p">,</span>
-  <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"zealstyles"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"hannaabraham@gmail.com"</span><span class="p">,</span>
+  <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"James"</span><span class="p">,</span>
+  <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
+  <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"jamesdoe"</span><span class="p">,</span>
+  <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"jamesdoe@gmail.com"</span><span class="p">,</span>
   <span class="s2">"password"</span><span class="p">:</span> <span class="s2">"123456"</span>
 <span class="p">}</span>
 </code></pre>
@@ -575,12 +514,12 @@
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
   <span class="s2">"user"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">"id"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Hanna"</span><span class="p">,</span>
-    <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Abraham"</span><span class="p">,</span>
-    <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"hannaabraham"</span><span class="p">,</span>
-    <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"hannaabraham@gmail.com"</span>
-  <span class="p">},</span>
+    <span class="s2">"id"</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
+    <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"James"</span><span class="p">,</span>
+    <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
+    <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"jamesdoe"</span><span class="p">,</span>
+    <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-23T21:36:04.201Z"</span>
+<span class="p">},</span>
   <span class="s2">"token"</span><span class="p">:</span> <span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJuYW1ljoiaGFubmFhYnJhaGFtIiwicm9sZUlkIjozLCJpYXQiOjE1MDIwNjMyNDgsImV4cCI6MjEwNjg2MzI0OH0.A8x3Vm0h5LViN9yc_AhB1NJaxJsrth0FxLxdHDtAhSo"</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-2'>Request</h3>
@@ -593,19 +532,16 @@
 <li>Status: <code>201: Created</code></li>
 <li>Body <code>(application/json)</code></li>
 </ul>
-<h2 id='get-user'>Get User</h2>
+<h2 id='get-a-user'>Get a User</h2>
 <blockquote>
 <p>Response:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-  <span class="s2">"id"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-  <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">,</span>
-  <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
-  <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"johndoe"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"johndoe@gmail.com"</span><span class="p">,</span>
-  <span class="s2">"blocked"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:27.701Z"</span><span class="p">,</span>
-  <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:27.701Z"</span>
+  <span class="s2">"id"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+  <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Heather"</span><span class="p">,</span>
+  <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"James"</span><span class="p">,</span>
+  <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"heatherjames"</span><span class="p">,</span>
+  <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T18:00:45.108Z"</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-3'>Request</h3>
 <ul>
@@ -630,15 +566,11 @@
 <p>Response:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-    <span class="s2">"id"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-    <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Emeka"</span><span class="p">,</span>
-    <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Ike"</span><span class="p">,</span>
-    <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"lesterfox"</span><span class="p">,</span>
-    <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"lesterfox@gmail.com"</span><span class="p">,</span>
-    <span class="s2">"isBlocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-    <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:16.826Z"</span><span class="p">,</span>
-    <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:16.826Z"</span>
+  <span class="s2">"id"</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+  <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Emeka"</span><span class="p">,</span>
+  <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Ike"</span><span class="p">,</span>
+  <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"emekaonu12"</span><span class="p">,</span>
+  <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-24T21:17:21.403Z"</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-4'>Request</h3>
 <ul>
@@ -674,25 +606,21 @@
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
   <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"superadmin"</span><span class="p">,</span>
-  <span class="s2">"password"</span><span class="p">:</span> <span class="s2">"12345"</span>
+  <span class="s2">"password"</span><span class="p">:</span> <span class="s2">"123456"</span>
 <span class="p">}</span>
 </code></pre>
 <blockquote>
 <p>Response:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-    <span class="s2">"user"</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">"user"</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
       <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Mighty"</span><span class="p">,</span>
       <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Joe"</span><span class="p">,</span>
       <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"superadmin"</span><span class="p">,</span>
-      <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"superadmin@gmail.com"</span><span class="p">,</span>
-      <span class="s2">"isBlocked"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-      <span class="s2">"roleId"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-      <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:16.419Z"</span><span class="p">,</span>
-      <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:16.419Z"</span>
-    <span class="p">},</span>
-  <span class="s2">"token"</span><span class="p">:</span> <span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJzdXBlcmFkbWluIiwicm9sZUlkIjoxLCJpYXQiOjE1MDI0NTMxMTUsImV4cCI6MjEwNzI1MzExNX0.Qd3lg3FoOLdgCyxspYYamFTmMJ29a4YajrD2cb5qwHo"</span>
+      <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:16.419Z"</span>
+  <span class="p">},</span>
+  <span class="s2">"token"</span><span class="p">:</span> <span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJzdXBlcmFkbWluIiwiZW1haWwiOiJzdXBlcmFkbWluQGdtYWlsLmNvbSIsInJvbGVJZCI6MSwiaWF0IjoxNTAzNTkxMTcxLCJleHAiOjIxMDgzOTExNzF9.naQjCv0Xsfref_F23sWicImCysuRuUZTLwVervd_TDc"</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-6'>Request</h3>
 <ul>
@@ -729,8 +657,6 @@
         <span class="s2">"id"</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
         <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"to whom he paid homage and swore fealty"</span><span class="p">,</span>
         <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-        <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"public"</span><span class="p">,</span>
-        <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
         <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
         <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
       <span class="p">},</span>
@@ -738,13 +664,11 @@
         <span class="s2">"id"</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
         <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"in the British Isles, a general title for a prince"</span><span class="p">,</span>
         <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-        <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"role"</span><span class="p">,</span>
-        <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
         <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
         <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
       <span class="p">}</span>
   <span class="p">],</span>
-  <span class="s2">"paginationDetail"</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">"paginationDetails"</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">"page"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">"pageCount"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">"pageSize"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -767,26 +691,20 @@
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
   <span class="s2">"users"</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"johndoe"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"johndoe@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"Role"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"user"</span>
-        <span class="p">}</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-        <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Jane"</span><span class="p">,</span>
-        <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Doe"</span><span class="p">,</span>
-        <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"janedoe"</span><span class="p">,</span>
-        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"janedoe@gmail.com"</span><span class="p">,</span>
-        <span class="s2">"Role"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"admin"</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
+  <span class="p">{</span>
+    <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">,</span>
+    <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"Kenny"</span><span class="p">,</span>
+    <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"mandyfox"</span><span class="p">,</span>
+    <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-23T21:36:04.201Z"</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">"firstName"</span><span class="p">:</span> <span class="s2">"Kenny"</span><span class="p">,</span>
+    <span class="s2">"lastName"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">,</span>
+    <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"kennyjohn"</span><span class="p">,</span>
+    <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-23T22:01:33.355Z"</span>
+  <span class="p">}</span>
   <span class="p">],</span>
-  <span class="s2">"pagination"</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">"paginationDetails"</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">"page"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">"pageCount"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">"pageSize"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
@@ -795,7 +713,7 @@
 <span class="p">}</span>
 </code></pre><h3 id='request-9'>Request</h3>
 <ul>
-<li>Endpoint: GET: <code>/api/v1/search/users</code></li>
+<li>Endpoint: GET: <code>/api/v1/search/users/?q=ken</code></li>
 <li>Requires: Authentication and Authorization</li>
 </ul>
 <h3 id='query-parameters-2'>Query Parameters</h3>
@@ -823,41 +741,26 @@
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
   <span class="s2">"documents"</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
-        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"What is a lord in England?"</span><span class="p">,</span>
-        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-        <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"public"</span><span class="p">,</span>
-        <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span><span class="p">,</span>
-        <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span>
+  <span class="p">{</span>
+      <span class="s2">"id"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+      <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Eating an elephant"</span><span class="p">,</span>
+      <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
+      <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
+      <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
     <span class="p">},</span>
     <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
-        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"English Titles Lord and Lady Titles Buy A Title"</span><span class="p">,</span>
-        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-        <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"role"</span><span class="p">,</span>
-        <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span><span class="p">,</span>
-        <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span>
+      <span class="s2">"id"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"The second coming"</span><span class="p">,</span>
+      <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
+      <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
+      <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
     <span class="p">},</span>
     <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
-        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"How much does it cost to buy a title"</span><span class="p">,</span>
-        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-        <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"public"</span><span class="p">,</span>
-        <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span><span class="p">,</span>
-        <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
-        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"My first experience as an intern"</span><span class="p">,</span>
-        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"The Second Coming was written in 1919 in the aftermath of the first World War. The above version of the poem is as it was published in the edition of Michael Robartes and the Dancer dated 1920 (there are numerous other versions of the poem). The preface and notes in the book contain some philosphy attributed to Robartes."</span><span class="p">,</span>
-        <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"private"</span><span class="p">,</span>
-        <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T09:03:21.428Z"</span><span class="p">,</span>
-        <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T09:03:21.428Z"</span>
+      <span class="s2">"id"</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+      <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"How much does it cost to buy a title"</span><span class="p">,</span>
+      <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
+      <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
+      <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
     <span class="p">}</span>
   <span class="p">],</span>
   <span class="s2">"paginationDetails"</span><span class="p">:</span> <span class="p">{</span>
@@ -910,13 +813,11 @@
 <p>Response:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-    <span class="s2">"id"</span><span class="p">:</span> <span class="mi">27</span><span class="p">,</span>
-    <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"The second comming"</span><span class="p">,</span>
-    <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"Turning and turn in a widening gyre, the falcon can't hear the falconer"</span><span class="p">,</span>
-    <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"role"</span><span class="p">,</span>
-    <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-07T00:30:24.006Z"</span><span class="p">,</span>
-    <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-07T00:30:24.006Z"</span>
+  <span class="s2">"id"</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+  <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Eating an elephant head 4"</span><span class="p">,</span>
+  <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
+  <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-24T23:05:44.606Z"</span><span class="p">,</span>
+  <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-24T23:05:44.606Z"</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-2'>Request</h3>
 <ul>
@@ -934,13 +835,11 @@
 <p>Response:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-    <span class="s2">"id"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Letting you down"</span><span class="p">,</span>
-    <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-    <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"role"</span><span class="p">,</span>
-    <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span><span class="p">,</span>
-    <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span>
+  <span class="s2">"id"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Eating an elephant"</span><span class="p">,</span>
+  <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
+  <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
+  <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-3'>Request</h3>
 <ul>
@@ -957,19 +856,19 @@
 <p>Request:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-  <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"Together they can tell the future"</span>
+  <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"The second comming is near us"</span><span class="p">,</span>
+  <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"Turning and turn in a widening gyre, the falcon can't hear the falconer"</span>
 <span class="p">}</span>
 </code></pre>
 <blockquote>
 <p>Response:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-    <span class="s2">"id"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Together they can tell the future"</span><span class="p">,</span>
-    <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"role"</span><span class="p">,</span>
-    <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span><span class="p">,</span>
-    <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-06T08:50:28.174Z"</span>
+  <span class="s2">"id"</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+  <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"The second comming is near us"</span><span class="p">,</span>
+  <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"Turning and turn in a widening gyre, the falcon can't hear the falconer"</span><span class="p">,</span>
+  <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-24T23:05:44.606Z"</span><span class="p">,</span>
+  <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-25T10:46:49.308Z"</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-4'>Request</h3>
 <ul>
@@ -987,33 +886,28 @@
 <p>Response:</p>
 </blockquote>
 <pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
-    <span class="s2">"documents"</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">"id"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-      <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"How to eat an elephant taht died"</span><span class="p">,</span>
-      <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-      <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"role"</span><span class="p">,</span>
-      <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-      <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T18:36:28.603Z"</span><span class="p">,</span>
-      <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T18:36:28.603Z"</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">"id"</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
-      <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"How much does it cost to buy a title"</span><span class="p">,</span>
-      <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."</span><span class="p">,</span>
-      <span class="s2">"access"</span><span class="p">:</span> <span class="s2">"public"</span><span class="p">,</span>
-      <span class="s2">"userId"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-      <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
-      <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
-    <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="s2">"paginationDetails"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"page"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="s2">"pageCount"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="s2">"pageSize"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="s2">"totalCount"</span><span class="p">:</span> <span class="mi">3</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+  <span class="s2">"documents"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"How to eat an elephant"</span><span class="p">,</span>
+        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries"</span><span class="p">,</span>
+        <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span><span class="p">,</span>
+        <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-10T17:28:17.003Z"</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"How to use to beans"</span><span class="p">,</span>
+        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"hshgvcvghvchgb bnvhzghdsb bnnvhcj hvajha basjhvhjas jhahja jhgasj nhasjh"</span><span class="p">,</span>
+        <span class="s2">"createdAt"</span><span class="p">:</span> <span class="s2">"2017-08-23T22:04:36.673Z"</span><span class="p">,</span>
+        <span class="s2">"updatedAt"</span><span class="p">:</span> <span class="s2">"2017-08-23T22:04:36.673Z"</span>
+      <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"paginationDetails"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"page"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"pageCount"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"pageSize"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="s2">"totalCount"</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 </code></pre><h3 id='request-5'>Request</h3>
 <ul>

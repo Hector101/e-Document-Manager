@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
       unique: { args: true, msg: 'Document title already exist' },
       validate: {
         notEmpty: { args: true, msg: 'Document title Required' },
-        len: { args: [5, 200], msg: 'title too short or too long' }
+        len: {
+          args: [5, 200],
+          msg: 'title should be between 5 - 200 characters'
+        }
       }
     },
     content: {
@@ -20,7 +23,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: { args: true, msg: 'Document content Required' },
-        len: { args: [20], msg: 'content too short' }
+        len: {
+          args: [20],
+          msg: 'Document content should be at least 20 characters'
+        }
       }
     },
     userId: {

@@ -49,7 +49,7 @@ const Authorization = {
    * @returns {Object} - server response payload
    */
   verifyUser(req, res, next) {
-    const token = req.body.token || req.headers.authorization;
+    const token = req.headers.authorization;
     if (token) {
       jwt.verify(token, secret, (err, decoded) => {
         if (err) {
@@ -60,11 +60,21 @@ const Authorization = {
           );
         }
 
-        models.User
+        return models.User
           .findOne({
             include: [{ model: models.Role, attributes: ['name'] }],
             where: {
-              username: decoded.username
+              $or: [
+                {
+                  username: decoded.username
+                },
+                {
+                  email: decoded.email
+                },
+                {
+                  id: decoded.id
+                }
+              ]
             }
           })
           .then((user) => {
@@ -81,11 +91,6 @@ const Authorization = {
                 403,
                 "Access denied, you're blocked"
               );
-            }
-            if (decoded.roleId === 1) {
-              decoded.isSuperAdmin = true;
-            } else if (decoded.roleId === 2) {
-              decoded.isAdmin = true;
             }
             decoded.role = user.Role.name;
             req.decoded = decoded;
@@ -111,7 +116,7 @@ const Authorization = {
    * @returns {Object} - server response payload
    */
   verifySuperAdmin(req, res, next) {
-    if (!req.decoded.isSuperAdmin) {
+    if (!req.decoded.roleId === 1) {
       return HandleResponse.getResponse(
         res,
         403,
@@ -119,24 +124,6 @@ const Authorization = {
       );
     }
     return next();
-  },
-
-  /**
-   * verify if user has admin rights
-   * @param {Object} req - request object from client
-   * @param {Object} res - response object
-   * @param {Function} next - next middleware
-   * @returns {Object} - server response payload
-   */
-  verifySuperAndAdmin(req, res, next) {
-    if (req.decoded.isSuperAdmin || req.decoded.isAdmin) {
-      return next();
-    }
-    return HandleResponse.getResponse(
-      res,
-      403,
-      'Not authorized, only admins allowed'
-    );
   },
 
   /**

@@ -8,7 +8,8 @@ const { newDocument, invalidFieldDocument } = fakeDocuments;
 
 describe('Document model', () => {
   describe('#Document.create', () => {
-    it('should create a user document when all required documents fields is provided and valid', (done) => {
+    it(`should create a user document when all 
+    required documents fields is provided and valid`, (done) => {
       models.Document.create(newDocument)
       .then((user) => {
         expect(user.dataValues.title).toEqual(newDocument.title);
@@ -40,12 +41,14 @@ describe('Document model', () => {
   });
 
   describe('#Document.update', () => {
-    it('should update a user document by owner of document', (done) => {
+    it(`should update a user 
+    document by owner of document`, (done) => {
       models.Document.findById('16')
         .then((document) => {
           document.update({ title: 'React ecosystem is a mess' })
             .then((documentUpdate) => {
-              expect(documentUpdate.dataValues.title).toEqual('React ecosystem is a mess');
+              expect(documentUpdate.dataValues.title)
+              .toEqual('React ecosystem is a mess');
 
               done();
             });
@@ -54,7 +57,8 @@ describe('Document model', () => {
   });
 
   describe('#Documents.destroy', () => {
-    it('should delete a user document, when document id belongs to a user', (done) => {
+    it(`should delete a user document, 
+    when document id belongs to a user`, (done) => {
       models.Document.findById('6')
         .then((document) => {
           document.destroy()

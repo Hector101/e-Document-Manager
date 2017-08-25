@@ -18,7 +18,6 @@ export default (router) => {
   router.get(
     '/api/v1/users',
     Authorization.verifyUser,
-    Authorization.verifySuperAndAdmin,
     UsersController.getUsers
   );
   router.get(
